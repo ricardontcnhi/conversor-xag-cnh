@@ -14,6 +14,7 @@ label{font-size:16px;font-weight:bold;margin-top:10px;display:block;}
 input,select{width:100%;padding:15px;border-radius:8px;border:1px solid #ccc;margin-top:5px;font-size:16px;} 
 button{width:100%;background:#0066cc;color:white;border:none;padding:15px;border-radius:8px;font-size:18px;margin-top:20px;cursor:pointer;} 
 button:hover{background:#0055aa;} 
+.copyBtn{background:#00aa55 !important;} 
 #output{margin-top:15px;font-size:20px;font-weight:bold;color:green;text-align:center;} 
 .footer{text-align:center;font-size:14px;color:#555;margin-top:20px;margin-bottom:20px;} 
 .steps{font-size:16px;line-height:1.6;} 
@@ -29,6 +30,15 @@ function converter(){
  let c = kit==='Basic' ? 'B' : 'F';
  let r = 'X' + x.substring(4,6) + b + x.substring(6,8) + c + x.substring(12,13) + x.substring(13,15) + x.substring(15);
  document.getElementById('output').innerText = r;
+ let btn = document.getElementById('copyBtn');
+ btn.style.display = 'block';
+ btn.onclick = function(){
+     navigator.clipboard.writeText(r).then(()=>{
+         alert('Chassi CNH copiado!');
+     }).catch(()=>{
+         alert('Erro ao copiar');
+     });
+ };
 }
 if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js');}
 </script>
@@ -47,6 +57,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worke
 <select id='kit'><option>Basic</option><option>Full</option></select>
 <button onclick='converter()'>Gerar Chassi CNH</button>
 <div id='output'></div>
+<button id='copyBtn' class='copyBtn' style='display:none;'>Copiar CNH</button>
 </div>
 
 <div class='card'>
