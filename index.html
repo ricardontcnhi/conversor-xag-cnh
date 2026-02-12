@@ -1,97 +1,59 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Conversor Chassi XAG > CNH</title>
-<meta name="theme-color" content="#0066cc">
-<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0066cc" />
+<link rel="manifest" href="manifest.json" />
+
 <style>
-*, *::before, *::after { box-sizing: border-box; }
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f0f2f5;
-  color:#222;
-}
-.header{
-  background:#0066cc;
-  color:white;
-  padding:20px;
-  text-align:center;
-  font-size:24px;
-  font-weight:bold;
-  box-shadow:0 2px 5px rgba(0,0,0,0.2);
-}
-.container{
-  padding:20px;
-  max-width:920px;
-  margin:0 auto;
-}
-.card{
-  background:white;
-  border-radius:12px;
-  padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.15);
-}
-label{
-  font-size:16px;
-  font-weight:bold;
-  margin-top:10px;
-  display:block;
-}
-input,select{
-  width:100%;
-  padding:15px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  margin-top:5px;
-  font-size:16px;
-  display:block;
-}
-button{
-  width:100%;
-  background:#0066cc;
-  color:white;
-  border:none;
-  padding:15px;
-  border-radius:8px;
-  font-size:18px;
-  margin-top:20px;
-  cursor:pointer;
-}
-button:hover{ background:#0055aa; }
-.copyBtn{
-  background:#00aa55 !important;
-}
-#output{
-  margin-top:15px;
-  font-size:20px;
-  font-weight:bold;
-  color:green;
-  text-align:center;
-}
-.footer{
-  text-align:center;
-  font-size:14px;
-  color:#555;
-  margin-top:20px;
-  margin-bottom:20px;
-}
-.steps{
-  font-size:16px;
-  line-height:1.6;
-}
-.steps li{
-  margin-bottom:12px;
-}
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    font-family:Arial;
+    background:#f0f2f5;
+    color:#222;
+  }
+  .header{
+    background:#0066cc; color:white; padding:20px; text-align:center;
+    font-size:24px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);
+  }
+  .container{
+    padding:20px; max-width:920px; margin:0 auto;
+  }
+  .card{
+    background:white; border-radius:12px; padding:20px; margin-bottom:20px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15);
+  }
+  label{
+    font-size:16px; font-weight:bold; margin-top:10px; display:block;
+  }
+  input, select{
+    width:100%; padding:15px; border-radius:8px; border:1px solid #ccc;
+    margin-top:5px; font-size:16px; display:block;
+  }
+  button{
+    width:100%; background:#0066cc; color:white; border:none; padding:15px;
+    border-radius:8px; font-size:18px; margin-top:20px; cursor:pointer;
+  }
+  button:hover{ background:#0055aa; }
+  .copyBtn{ background:#00aa55 !important; }
+  #output{
+    margin-top:15px; font-size:20px; font-weight:bold; color:green; text-align:center;
+  }
+  .footer{
+    text-align:center; font-size:14px; color:#555; margin-top:20px; margin-bottom:20px;
+  }
+  .steps{ font-size:16px; line-height:1.6; }
+  .steps li{ margin-bottom:12px; }
 </style>
 </head>
 
 <body>
 
-<!-- Toast de notificação (novo) -->
+<!-- Toast de notificação (substitui alert) -->
 <div id="toast" style="
   position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
   background: #0066cc; color: #fff; padding: 14px 22px; border-radius: 8px;
@@ -119,7 +81,7 @@ button:hover{ background:#0055aa; }
     <h3>Conversor</h3>
 
     <label>Chassi XAG:</label>
-    <input id="xag" placeholder="Digite o chassi XAG">
+    <input id="xag" placeholder="Digite o chassi XAG" />
 
     <label>Marca:</label>
     <select id="marca">
@@ -140,9 +102,10 @@ button:hover{ background:#0055aa; }
       <option value="2025">2025</option>
       <option value="2026">2026</option>
       <option value="2027">2027</option>
+      <option value="2028">2028</option>
     </select>
 
-    <button onclick="converter()">Gerar Chassi CNH</button>
+    <!-- Botão de gerar foi removido; geração agora é automática -->
 
     <div id="output"></div>
     <button id="copyBtn" class="copyBtn" style="display:none;">Copiar CNH</button>
@@ -152,153 +115,3 @@ button:hover{ background:#0055aa; }
     <h3>Como adicionar como App no Celular</h3>
     <ol class="steps">
       <li>Abra este site no navegador Chrome do celular.</li>
-      <li>Aguarde aparecer o aviso: <b>“Adicionar à tela inicial”</b>.</li>
-      <li>Se não aparecer, toque nos três pontinhos (⋮) do Chrome.</li>
-      <li>Toque em <b>Adicionar à tela inicial</b>.</li>
-      <li>Confirme e o WebAPK será instalado como aplicativo real.</li>
-    </ol>
-  </div>
-
-  <div class="card">
-    <h3>Como instalar no Computador</h3>
-    <ol class="steps">
-      <li>Abra o site no Chrome (Windows/Mac).</li>
-      <li>Clique no ícone de instalação na barra de endereço (um monitor com setinha).</li>
-      <li>Confirme em <b>Instalar</b>.</li>
-      <li>O app será instalado como programa independente.</li>
-    </ol>
-  </div>
-
-  <div class="footer">
-    Centro de Treinamento Curitiba - 12/02/2026 - RNT
-  </div>
-
-</div>
-
-<script>
-// ---------- Tabela VIN (10º dígito) ----------
-const VIN_YEAR_CODE = {
-  2020:'L', 2021:'M', 2022:'N', 2023:'P', 2024:'R', 2025:'S',
-  2026:'T', 2027:'V', 2028:'W', 2029:'X'
-};
-// --------------------------------------------
-function converter(){
-  const x = document.getElementById('xag').value.trim();
-  const marca = document.getElementById('marca').value;
-  const kit = document.getElementById('kit').value;
-  const anoModelo = document.getElementById('anoModelo').value;
-
-  if (x.length < 18){
-    showToast('Chassi XAG inválido');   // <-- substitui alert
-    return;
-  }
-  if (!anoModelo){
-    showToast('Selecione o ano‑modelo'); // <-- substitui alert
-    return;
-  }
-  // Marca
-  const b = (marca === 'New Holland') ? 'N' : 'C';
-  // Kit
-  const c = (kit === 'Basic') ? 'B' : 'F';
-  // ----- Ano de fabricação XAG -----
-  const anoXAGdigit = x.charAt(12); // posição 13 do chassi XAG
-  const anoFabricacao = 2020 + Number(anoXAGdigit);
-  // Letra VIN correspondente ao ano de fabricação
-  const letraBloco = VIN_YEAR_CODE[anoFabricacao];
-  // Último dígito do ano-modelo escolhido
-  const digitoModelo = anoModelo.slice(-1);
-  // Novo bloco variante
-  const blocoVariante = letraBloco + digitoModelo;
-  // Partes finais do XAG
-  const anoXAG = x.substring(12,13);
-  const semanaXAG = x.substring(13,15);
-  const randomXAG = x.substring(15);
-  // Construção final CNH
-  const r = 'X' +
-            x.substring(4,6) + // 24
-            b +
-            x.substring(6,8) + // P1/P2
-            c +
-            blocoVariante +     // <--- CORRETO
-            anoXAG +
-            semanaXAG +
-            randomXAG;
-  // Exibir e copiar
-  document.getElementById('output').innerText = r;
-  const btn = document.getElementById('copyBtn');
-  btn.style.display = 'block';
-  btn.onclick = () => {
-    navigator.clipboard.writeText(r)
-      .then(()=> showToast('Chassi CNH copiado!'))   // <-- substitui alert
-      .catch(()=> showToast('Erro ao copiar'));      // <-- substitui alert
-  };
-}
-// --------------------------------------------
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js');
-}
-</script>
-
-<script>
-// ====== ANTI-CURIOUS ======
-// 1) Bloqueia menu de contexto (botão direito)
-document.addEventListener("contextmenu", (e) => {
-  // Permite menu em inputs/selects/textarea
-  const tag = (e.target.tagName || "").toLowerCase();
-  if (["input", "select", "textarea"].includes(tag)) return;
-  e.preventDefault();
-}, { capture: true });
-
-// 2) Bloqueia arrastar (para evitar arrastar imagens/ícones)
-document.addEventListener("dragstart", (e) => e.preventDefault(), { capture: true });
-
-// 3) Bloqueia seleção/cópia na página inteira, exceto nos campos do formulário
-(function preventCopyAndSelection(){
-  const style = document.createElement("style");
-  style.innerHTML = `
-    /* bloqueia seleção global */
-    body, .container, .card, .header, .footer {
-      -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
-    }
-    /* permite seleção apenas nos inputs/select/textarea */
-    input, select, textarea {
-      -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
-    }
-  `;
-  document.head.appendChild(style);
-  // Bloqueia eventos de copiar/recortar fora de inputs
-  ["copy","cut"].forEach(evt => {
-    document.addEventListener(evt, (e) => {
-      const tag = (e.target.tagName || "").toLowerCase();
-      if (!["input", "textarea"].includes(tag)) e.preventDefault();
-    }, { capture: true });
-  });
-})();
-
-// 4) Bloqueia atalhos comuns de inspeção/salvar/visualizar fonte
-document.addEventListener("keydown", (e) => {
-  const k = e.key.toLowerCase();
-  const ctrl = e.ctrlKey || e.metaKey; // mac usa Command
-  const shift = e.shiftKey;
-  // F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+Shift+J (devtools)
-  if (k === "f12" || (ctrl && shift && ["i","c","j"].includes(k))) {
-    e.preventDefault(); e.stopPropagation();
-  }
-  // Ctrl+U (view-source), Ctrl+S (save), Ctrl+P (print)
-  if (ctrl && ["u","s","p"].includes(k)) {
-    e.preventDefault(); e.stopPropagation();
-  }
-}, { capture: true });
-
-// 5) Pequena ofuscação do console (desestimula usuário leigo)
-(function blurConsole(){
-  if (!window.console) return;
-  try {
-    const block = () => console.log("%cDevTools desabilitado", "font-size:16px;color:#c00;font-weight:bold");
-    ["log","warn","info","debug"].forEach(fn => { try { console[fn] = block; } catch(_){} });
-  } catch(_) {}
-})();
-</script>
-
-</body>
-</html>
