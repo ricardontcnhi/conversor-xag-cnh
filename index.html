@@ -247,6 +247,67 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
 </script>
+<script>
+// ====== ANTI-CURIOUS ======
+// 1) Bloqueia menu de contexto (botão direito)
+document.addEventListener("contextmenu", (e) => {
+  // Permite menu em inputs/selects/textarea
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (["input", "select", "textarea"].includes(tag)) return;
+  e.preventDefault();
+}, { capture: true });
 
+// 2) Bloqueia arrastar (para evitar arrastar imagens/ícones)
+document.addEventListener("dragstart", (e) => e.preventDefault(), { capture: true });
+
+// 3) Bloqueia seleção/cópia na página inteira, exceto nos campos do formulário
+(function preventCopyAndSelection(){
+  const style = document.createElement("style");
+  style.innerHTML = `
+    /* bloqueia seleção global */
+    body, .container, .card, .header, .footer {
+      -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+    }
+    /* permite seleção apenas nos inputs/select/textarea */
+    input, select, textarea {
+      -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Bloqueia eventos de copiar/recortar fora de inputs
+  ["copy","cut"].forEach(evt => {
+    document.addEventListener(evt, (e) => {
+      const tag = (e.target.tagName || "").toLowerCase();
+      if (!["input", "textarea"].includes(tag)) e.preventDefault();
+    }, { capture: true });
+  });
+})();
+
+// 4) Bloqueia atalhos comuns de inspeção/salvar/visualizar fonte
+document.addEventListener("keydown", (e) => {
+  const k = e.key.toLowerCase();
+  const ctrl = e.ctrlKey || e.metaKey;    // mac usa Command
+  const shift = e.shiftKey;
+
+  // F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+Shift+J (devtools)
+  if (k === "f12" || (ctrl && shift && ["i","c","j"].includes(k))) {
+    e.preventDefault(); e.stopPropagation();
+  }
+  // Ctrl+U (view-source), Ctrl+S (save), Ctrl+P (print)
+  if (ctrl && ["u","s","p"].includes(k)) {
+    e.preventDefault(); e.stopPropagation();
+  }
+}, { capture: true });
+
+// 5) Pequena ofuscação do console (desestimula usuário leigo)
+(function blurConsole(){
+  if (!window.console) return;
+  try {
+    const block = () => console.log("%cDevTools desabilitado", "font-size:16px;color:#c00;font-weight:bold");
+    ["log","warn","info","debug"].forEach(fn => { try { console[fn] = block; } catch(_){} });
+  } catch(_) {}
+})();
+</script>
 </body>
 </html>
