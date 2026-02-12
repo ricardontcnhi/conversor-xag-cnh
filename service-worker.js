@@ -1,5 +1,5 @@
 // Troque a versão SEMPRE que publicar (garante atualização imediata)
-const CACHE_NAME = "pwa-v1.0.0";  // ex.: pwa-v1.0.1, pwa-v1.0.2 ...
+const CACHE_NAME = "pwa-v1.0.1";  // ex.: pwa-v1.0.1, pwa-v1.0.2 ...
 
 // Núcleo do app (páginas que garantem o shell funcionar)
 const CORE_ASSETS = [
