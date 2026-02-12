@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwa-v5";   // <-- quando subir nova versão, troque v5 por v6
+const CACHE_NAME = "pwa-v6";   // <-- quando subir nova versão, troque v5 por v6
 
 const ASSETS = [
   "./",
