@@ -159,7 +159,13 @@ if ('serviceWorker' in navigator) {
 <label>Kit:</label>
 <select id='kit'><option>Basic</option><option>Full</option></select>
 <label>Modelo:</label>
-<select id="anoModelo"></select>
+<select id="anoModelo">
+  <option value="2024">2024</option>
+    <option value="2025">2025</option>
+    <option value="2026">2026</option>
+    <option value="2027">2027</option>
+    <option value="2028">2028</option>
+</select>
 <button onclick='converter()'>Gerar Chassi CNH</button>
 <div id='output'></div>
 <button id='copyBtn' class='copyBtn' style='display:none;'>Copiar CNH</button>
