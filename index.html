@@ -1,20 +1,75 @@
 
-<!DOCTYPE html><html><head><meta charset='utf-8'>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0066cc">
+<!DOCTYPE html><html lang='pt'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
 <title>Conversor Chassi XAG > CNH</title>
-</head><body>
-<h2>Conversor Chassi XAG > CNH</h2>
-<input id='xag' placeholder='Chassi XAG'>
-<select id='marca'><option>New Holland</option><option>Case</option></select>
-<select id='kit'><option>Basic</option><option>Full</option></select>
-<button onclick='conv()'>Converter</button>
-<div id='out'></div>
+<link rel="manifest" href="manifest.json">
+<style>
+body{margin:0;font-family:Arial;background:#f0f2f5;color:#222;}
+.header{background:#0066cc;color:white;padding:20px;text-align:center;font-size:24px;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.2);} 
+.container{padding:20px;} 
+.card{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 6px rgba(0,0,0,0.15);} 
+label{font-size:16px;font-weight:bold;margin-top:10px;display:block;} 
+input,select{width:100%;padding:15px;border-radius:8px;border:1px solid #ccc;margin-top:5px;font-size:16px;} 
+button{width:100%;background:#0066cc;color:white;border:none;padding:15px;border-radius:8px;font-size:18px;margin-top:20px;cursor:pointer;} 
+button:hover{background:#0055aa;} 
+#output{margin-top:15px;font-size:20px;font-weight:bold;color:green;text-align:center;} 
+.footer{text-align:center;font-size:14px;color:#555;margin-top:20px;margin-bottom:20px;} 
+.steps{font-size:16px;line-height:1.6;} 
+.steps li{margin-bottom:12px;} 
+</style>
 <script>
-function conv(){let x=document.getElementById('xag').value.trim();let m=document.getElementById('marca').value;let k=document.getElementById('kit').value;
-if(x.length<18){alert('Chassi inválido');return;}let b=m==='New Holland'?'N':'C';let c=k==='Basic'?'B':'F';
-let r='X'+x.substring(4,6)+b+x.substring(6,8)+c+x.substring(12,13)+x.substring(13,15)+x.substring(15);
-document.getElementById('out').innerText=r;}
+function converter(){
+ let x=document.getElementById('xag').value.trim();
+ let marca=document.getElementById('marca').value;
+ let kit=document.getElementById('kit').value;
+ if(x.length<18){alert('Chassi XAG inválido');return;}
+ let b = marca==='New Holland' ? 'N' : 'C';
+ let c = kit==='Basic' ? 'B' : 'F';
+ let r = 'X' + x.substring(4,6) + b + x.substring(6,8) + c + x.substring(12,13) + x.substring(13,15) + x.substring(15);
+ document.getElementById('output').innerText = r;
+}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js');}
 </script>
+</head>
+<body>
+<div class='header'>Conversor Chassi XAG > CNH</div>
+<div class='container'>
+
+<div class='card'>
+<h3>Conversor</h3>
+<label>Chassi XAG:</label>
+<input id='xag' placeholder='Digite o chassi XAG'>
+<label>Marca:</label>
+<select id='marca'><option>New Holland</option><option>Case</option></select>
+<label>Kit:</label>
+<select id='kit'><option>Basic</option><option>Full</option></select>
+<button onclick='converter()'>Gerar Chassi CNH</button>
+<div id='output'></div>
+</div>
+
+<div class='card'>
+<h3>Como adicionar como App no Celular</h3>
+<ol class='steps'>
+<li>Abra este site no navegador Chrome do celular.</li>
+<li>Aguarde aparecer o aviso: <b>“Adicionar à tela inicial”</b>.</li>
+<li>Se não aparecer, toque nos três pontinhos (⋮) do Chrome.</li>
+<li>Toque em <b>Adicionar à tela inicial</b>.</li>
+<li>Confirme e o WebAPK será instalado como aplicativo real.</li>
+</ol>
+</div>
+
+<div class='card'>
+<h3>Como instalar no Computador</h3>
+<ol class='steps'>
+<li>Abra o site no Chrome (Windows/Mac).</li>
+<li>Clique no ícone de instalação na barra de endereço (um monitor com setinha).</li>
+<li>Confirme em <b>Instalar</b>.</li>
+<li>O app será instalado como programa independente.</li>
+</ol>
+</div>
+
+<div class='footer'>Centro de Treinamento Curitiba - 12/02/2026 - RNT</div>
+</div>
 </body></html>
