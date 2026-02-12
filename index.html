@@ -54,22 +54,97 @@
   .steps li{ margin-bottom:12px; }
 </style>
 <script>
-function converter(){
- let x=document.getElementById('xag').value.trim();
- let marca=document.getElementById('marca').value;
- let kit=document.getElementById('kit').value;
- if(x.length<18){alert('Chassi XAG inválido');return;}
- let b = marca==='New Holland' ? 'N' : 'C';
- let c = kit==='Basic' ? 'B' : 'F';
- let r = 'X' + x.substring(4,6) + b + x.substring(6,8) + c + x.substring(12,13) + x.substring(13,15) + x.substring(15);
- document.getElementById('output').innerText = r;
- let btn = document.getElementById('copyBtn');
- btn.style.display = 'block';
- btn.onclick = function(){
-     navigator.clipboard.writeText(r).then(()=>{ alert('Chassi CNH copiado!'); }).catch(()=>{ alert('Erro ao copiar'); });
- };
+// --------------------- Tabela VIN (10º dígito) para ANO-MODELO ---------------------
+// Ciclo padrão: A..Y, depois 1..9, e reinicia. (2000–2039 listados aqui)
+const VIN_YEAR_CODE = {
+  2000:'Y', 2001:'1', 2002:'2', 2003:'3', 2004:'4', 2005:'5', 2006:'6',
+  2007:'7', 2008:'8', 2009:'9', 2010:'A', 2011:'B', 2012:'C', 2013:'D',
+  2014:'E', 2015:'F', 2016:'G', 2017:'H', 2018:'J', 2019:'K',
+  2020:'L', 2021:'M', 2022:'N', 2023:'P', 2024:'R', 2025:'S', 2026:'T',
+  2027:'V', 2028:'W', 2029:'X', 2030:'Y', 2031:'1', 2032:'2', 2033:'3',
+  2034:'4', 2035:'5', 2036:'6', 2037:'7', 2038:'8', 2039:'9'
+};
+
+// --------------------- Preenche o <select> de ano-modelo ---------------------
+(function fillAnoModelo(){
+  const sel = document.getElementById('anoModelo');
+  const anos = [];
+  for (let y = 2015; y <= 2036; y++) anos.push(y); // ajuste o range se quiser
+  sel.innerHTML = '<option value="">Selecione...</option>' +
+                  anos.map(y => `<option value="${y}">${y}</option>`).join('');
+})();
+
+// (Opcional) Seleciona automaticamente o ano corrente, se existir no range
+(function selectCurrentYear(){
+  const sel = document.getElementById('anoModelo');
+  const y = new Date().getFullYear();
+  if (sel.querySelector(`option[value="${y}"]`)) sel.value = String(y);
+})();
+
+// --------------------- Helpers ---------------------
+function vinCodeFromModelYear(year) {
+  const y = Number(year);
+  if (!VIN_YEAR_CODE[y]) throw new Error('Ano‑modelo fora da tabela suportada.');
+  return VIN_YEAR_CODE[y];
 }
-if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js');}
+function lastDigitOfYear(year) { return String(year).slice(-1); }
+
+// --------------------- Conversor principal ---------------------
+function converter(){
+  const x = document.getElementById('xag').value.trim();
+  const marca = document.getElementById('marca').value;
+  const kit   = document.getElementById('kit').value;
+  const anoModelo = document.getElementById('anoModelo').value;
+
+  // Validações
+  if (x.length < 18){ alert('Chassi XAG inválido'); return; }
+  if (!anoModelo){ alert('Selecione o ano‑modelo'); return; }
+
+  // Brand N/C
+  const b = (marca === 'New Holland') ? 'N' : 'C';
+
+  // Kit B/F (ajuste caso use S também)
+  const c = (kit === 'Basic') ? 'B' : 'F';
+
+  // ----- BLOCO dinâmico (substitui o "S4"): [letra VIN do ano‑modelo] + [último dígito do ano‑modelo]
+  const letraAno = vinCodeFromModelYear(anoModelo);  // ex.: 2024 -> R
+  const digitoAnoModelo = lastDigitOfYear(anoModelo); // ex.: 2024 -> 4
+  const blocoVariante = letraAno + digitoAnoModelo;   // ex.: R4
+
+  // ----- Partes do XAG: ano/semana/random
+  // Observação: você pediu "ANO do XAG" a partir do caractere na POSIÇÃO 13.
+  // Em strings JS (0-based), isso é charAt(12). (Antes você usava substring(12,13).)
+  const anoXAG    = x.substring(12,13); // ou: x.charAt(12)
+  const semanaXAG = x.substring(13,15);
+  const randomXAG = x.substring(15);
+
+  // ----- Montagem CNH
+  // X + 24 + (N/C) + (P1/P2) + (B/F) + [blocoVariante] + anoXAG + semanaXAG + randomXAG
+  const r = 'X' +
+            x.substring(4,6) +    // product code (24)
+            b +
+            x.substring(6,8) +    // P1 / P2
+            c +
+            blocoVariante +       // <-- entra aqui no lugar do "S4"
+            anoXAG +              // caractere 13 do XAG
+            semanaXAG +
+            randomXAG;
+
+  // Exibe + botão copiar
+  document.getElementById('output').innerText = r;
+  const btn = document.getElementById('copyBtn');
+  btn.style.display = 'block';
+  btn.onclick = function(){
+    navigator.clipboard.writeText(r)
+      .then(()=>{ alert('Chassi CNH copiado!'); })
+      .catch(()=>{ alert('Erro ao copiar'); });
+  };
+}
+
+// Mantém o service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
 </script>
 </head>
 <body>
@@ -83,6 +158,8 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worke
 <select id='marca'><option>New Holland</option><option>Case</option></select>
 <label>Kit:</label>
 <select id='kit'><option>Basic</option><option>Full</option></select>
+<label>Modelo:</label>
+<select id="anoModelo"></select>
 <button onclick='converter()'>Gerar Chassi CNH</button>
 <div id='output'></div>
 <button id='copyBtn' class='copyBtn' style='display:none;'>Copiar CNH</button>
