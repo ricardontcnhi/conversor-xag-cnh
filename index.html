@@ -115,3 +115,179 @@
     <h3>Como adicionar como App no Celular</h3>
     <ol class="steps">
       <li>Abra este site no navegador Chrome do celular.</li>
+      <li>Aguarde aparecer o aviso: <b>“Adicionar à tela inicial”</b>.</li>
+      <li>Se não aparecer, toque nos três pontinhos (⋮) do Chrome.</li>
+      <li>Toque em <b>Adicionar à tela inicial</b>.</li>
+      <li>Confirme e o WebAPK será instalado como aplicativo real.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>Como instalar no Computador</h3>
+    <ol class="steps">
+      <li>Abra o site no Chrome (Windows/Mac).</li>
+      <li>Clique no ícone de instalação na barra de endereço (um monitor com setinha).</li>
+      <li>Confirme em <b>Instalar</b>.</li>
+      <li>O app será instalado como programa independente.</li>
+    </ol>
+  </div>
+
+  <div class="footer">
+    Centro de Treinamento Curitiba - 12/02/2026 - RNT
+  </div>
+
+</div>
+
+<script>
+// ---------- Tabela VIN (10º dígito) para ano de fabricação XAG ----------
+const VIN_YEAR_CODE = {
+  2020:'L', 2021:'M', 2022:'N', 2023:'P', 2024:'R', 2025:'S',
+  2026:'T', 2027:'V', 2028:'W', 2029:'X'
+};
+
+// ---------- Elementos ----------
+const $xag       = document.getElementById('xag');
+const $marca     = document.getElementById('marca');
+const $kit       = document.getElementById('kit');
+const $anoModelo = document.getElementById('anoModelo');
+const $output    = document.getElementById('output');
+const $copyBtn   = document.getElementById('copyBtn');
+
+// ---------- Helpers ----------
+function camposProntos(){
+  return $xag.value.trim().length >= 18 &&
+         $marca.value && $kit.value && $anoModelo.value;
+}
+
+function montarCNH(){
+  const x = $xag.value.trim();
+  const marca = $marca.value;
+  const kit   = $kit.value;
+  const anoModelo = $anoModelo.value;
+
+  if (!camposProntos()){
+    $output.textContent = '';
+    $copyBtn.style.display = 'none';
+    return;
+  }
+
+  // Marca N/C
+  const b = (marca === 'New Holland') ? 'N' : 'C';
+
+  // Kit B/F (ajuste se usar S também)
+  const c = (kit === 'Basic') ? 'B' : 'F';
+
+  // Ano de fabricação do XAG (pos. 13 → índice 12)
+  const anoXAGdigit   = x.charAt(12);
+  const anoFabricacao = 2020 + Number(anoXAGdigit);
+
+  const letraBloco = VIN_YEAR_CODE[anoFabricacao];
+  if (!letraBloco){
+    showToast('Ano XAG fora da faixa suportada (2020–2029).');
+    $output.textContent = '';
+    $copyBtn.style.display = 'none';
+    return;
+  }
+
+  // Último dígito do Ano‑modelo selecionado
+  const digitoModelo = String(anoModelo).slice(-1);
+
+  // Bloco variante final = [VIN(ano XAG)] + [último dígito do ano‑modelo]
+  const blocoVariante = letraBloco + digitoModelo;
+
+  // Partes finais do XAG
+  const anoXAG    = x.substring(12,13);
+  const semanaXAG = x.substring(13,15);
+  const randomXAG = x.substring(15);
+
+  // Montagem CNH
+  const r = 'X' +
+            x.substring(4,6) +   // produto (24)
+            b +                  // N/C
+            x.substring(6,8) +   // P1/P2
+            c +                  // B/F
+            blocoVariante +      // (ex.: S4, T6, W8...)
+            anoXAG +
+            semanaXAG +
+            randomXAG;
+
+  // Exibir + copiar
+  $output.textContent = r;
+  $copyBtn.style.display = 'block';
+  $copyBtn.onclick = () => {
+    navigator.clipboard.writeText(r)
+      .then(()=> showToast('Chassi CNH copiado!'))
+      .catch(()=> showToast('Erro ao copiar'));
+  };
+}
+
+// ---------- Reagir automaticamente (sem botão) ----------
+['input','change','keyup','paste'].forEach(evt => {
+  $xag.addEventListener(evt, montarCNH, {passive:true});
+});
+$marca.addEventListener('change', montarCNH, {passive:true});
+$kit.addEventListener('change', montarCNH, {passive:true});
+$anoModelo.addEventListener('change', montarCNH, {passive:true});
+
+// Gera ao abrir, caso já existam dados (opcional)
+document.addEventListener('DOMContentLoaded', montarCNH);
+
+// ---------- Service Worker ----------
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+
+<script>
+/* ====== ANTI-CURIOUS (opcional) ====== */
+document.addEventListener("contextmenu", (e) => {
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (["input", "select", "textarea"].includes(tag)) return;
+  e.preventDefault();
+}, { capture: true });
+
+document.addEventListener("dragstart", (e) => e.preventDefault(), { capture: true });
+
+(function preventCopyAndSelection(){
+  const style = document.createElement("style");
+  style.innerHTML = `
+    body, .container, .card, .header, .footer {
+      -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+    }
+    input, select, textarea {
+      -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
+    }
+  `;
+  document.head.appendChild(style);
+
+  ["copy","cut"].forEach(evt => {
+    document.addEventListener(evt, (e) => {
+      const tag = (e.target.tagName || "").toLowerCase();
+      if (!["input", "textarea"].includes(tag)) e.preventDefault();
+    }, { capture: true });
+  });
+})();
+
+document.addEventListener("keydown", (e) => {
+  const k = e.key.toLowerCase();
+  const ctrl = e.ctrlKey || e.metaKey;
+  const shift = e.shiftKey;
+  if (k === "f12" || (ctrl && shift && ["i","c","j"].includes(k))) {
+    e.preventDefault(); e.stopPropagation();
+  }
+  if (ctrl && ["u","s","p"].includes(k)) {
+    e.preventDefault(); e.stopPropagation();
+  }
+}, { capture: true });
+
+(function blurConsole(){
+  if (!window.console) return;
+  try {
+    const block = () => console.log("%cDevTools desabilitado", "font-size:16px;color:#c00;font-weight:bold");
+    ["log","warn","info","debug"].forEach(fn => { try { console[fn] = block; } catch(_){} });
+  } catch(_) {}
+})();
+</script>
+
+</body>
+</html>
