@@ -6,19 +6,52 @@
 <meta name="theme-color" content="#0066cc">
 <link rel="manifest" href="manifest.json">
 <style>
-body{margin:0;font-family:Arial;background:#f0f2f5;color:#222;}
-.header{background:#0066cc;color:white;padding:20px;text-align:center;font-size:24px;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
-.container{padding:20px;}
-.card{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
-label{font-size:16px;font-weight:bold;margin-top:10px;display:block;}
-input,select{width:100%;padding:15px;border-radius:8px;border:1px solid #ccc;margin-top:5px;font-size:16px;}
-button{width:100%;background:#0066cc;color:white;border:none;padding:15px;border-radius:8px;font-size:18px;margin-top:20px;cursor:pointer;}
-button:hover{background:#0055aa;}
-.copyBtn{background:#00aa55 !important;}
-#output{margin-top:15px;font-size:20px;font-weight:bold;color:green;text-align:center;}
-.footer{text-align:center;font-size:14px;color:#555;margin-top:20px;margin-bottom:20px;}
-.steps{font-size:16px;line-height:1.6;}
-.steps li{margin-bottom:12px;}
+  /* 1) EVITA que inputs saiam do card (o principal da correção) */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body { margin:0; font-family:Arial; background:#f0f2f5; color:#222; }
+
+  .header{
+    background:#0066cc; color:white; padding:20px; text-align:center;
+    font-size:24px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  /* 2) Centraliza e limita a largura para evitar “espremer” em telas largas */
+  .container{
+    padding:20px;
+    max-width: 920px;       /* opcional, para estética */
+    margin: 0 auto;         /* centraliza */
+  }
+
+  .card{
+    background:white; border-radius:12px; padding:20px; margin-bottom:20px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  label{ font-size:16px; font-weight:bold; margin-top:10px; display:block; }
+
+  /* 3) Garante largura exata do card mesmo com padding/border */
+  input, select {
+    width:100%; padding:15px; border-radius:8px; border:1px solid #ccc;
+    margin-top:5px; font-size:16px; display:block;
+  }
+
+  button{
+    width:100%; background:#0066cc; color:white; border:none; padding:15px;
+    border-radius:8px; font-size:18px; margin-top:20px; cursor:pointer;
+  }
+  button:hover{ background:#0055aa; }
+
+  .copyBtn{ background:#00aa55 !important; }
+
+  #output{ margin-top:15px; font-size:20px; font-weight:bold; color:green; text-align:center; }
+
+  .footer{ text-align:center; font-size:14px; color:#555; margin-top:20px; margin-bottom:20px; }
+
+  .steps{ font-size:16px; line-height:1.6; }
+  .steps li{ margin-bottom:12px; }
 </style>
 <script>
 function converter(){
