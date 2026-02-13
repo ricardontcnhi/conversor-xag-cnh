@@ -265,23 +265,7 @@ $marca.addEventListener('change', montarCNH);
 $kit.addEventListener('change', montarCNH);
 $anoModelo.addEventListener('change', montarCNH);
 
-  // ====== Enviar para Google Sheets ======
-  fetch("https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec", {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      xag: x,
-      resultado: r,
-      marca: marca,
-      kit: kit,
-      anoModelo: anoModelo
-    })
-  });
 
-  // Atualiza contador após salvar
-  setTimeout(atualizarContador, 2000);
-}
 
 // Corrigido: Usando apenas 'input' para o campo de texto. 
 // Isso evita que 'keyup' e 'paste' disparem a função duas vezes.
