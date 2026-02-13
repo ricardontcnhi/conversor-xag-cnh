@@ -169,50 +169,66 @@ const VIN_YEAR_CODE = {
   2026:'T', 2027:'V', 2028:'W', 2029:'X'
 };
 
-// ---------- Inputs ----------
+// ---------- Elementos do DOM ----------
 const $xag = document.getElementById('xag');
 const $marca = document.getElementById('marca');
 const $kit = document.getElementById('kit');
 const $anoModelo = document.getElementById('anoModelo');
 const $output = document.getElementById('output');
 const $copyBtn = document.getElementById('copyBtn');
+const $clearBtn = document.getElementById('clearBtn');
+const $contador = document.getElementById('contador');
 
-// Memória do que está na tela no momento
+// Variáveis de Controle
 let dadosEmEspera = null;
-// Memória do último Chassi XAG que foi efetivamente enviado
 let ultimoXagEnviado = "";
+const APP_URL = "https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec";
+
+// ---------- Funções Principais ----------
+
+// CORREÇÃO: Função que verifica se o formulário está completo
+function camposProntos() {
+  return $xag.value.trim().length >= 17 && 
+         $marca.value !== "" && 
+         $kit.value !== "" && 
+         $anoModelo.value !== "";
+}
 
 function montarCNH() {
   const x = $xag.value.trim();
   
-  // 1. Só gera o código visual se tudo estiver preenchido
   if (!camposProntos()) {
     $output.textContent = '';
     $copyBtn.style.display = 'none';
     return;
   }
 
-  // Cálculos do Chassi CNH (mesma lógica anterior)
   const b = ($marca.value === 'New Holland') ? 'N' : 'C';
   const c = ($kit.value === 'Basic') ? 'B' : 'F';
-  const letraAno = VIN_YEAR_CODE[2020 + Number(x.charAt(12))];
-  if (!letraAno) return;
+  
+  // Cálculo do ano (posição 13 do XAG)
+  const anoIndex = Number(x.charAt(12));
+  const letraAno = VIN_YEAR_CODE[2020 + anoIndex];
+  
+  if (!letraAno) {
+    $output.textContent = "Erro: Ano XAG inválido";
+    return;
+  }
 
   const r = 'X' + x.substring(4,6) + b + x.substring(6,8) + c + 
             (letraAno + String($anoModelo.value).slice(-1)) + 
             x.substring(12,13) + x.substring(13,15) + x.substring(15);
 
-  // 2. Atualiza a tela (Usuário vê a mudança em tempo real)
+  // Exibe na tela em tempo real
   $output.textContent = r;
   $copyBtn.style.display = 'block';
 
-  // 3. LOGICA DE DETECÇÃO DE MUDANÇA DE DRONE
-  // Se o usuário digitou um NOVO XAG e já havia um drone anterior preenchido, salva o anterior.
+  // Gatilho: Se mudar o Chassi XAG, envia o drone anterior que estava "em espera"
   if (dadosEmEspera && dadosEmEspera.xag !== x) {
     enviarParaPlanilha(dadosEmEspera);
   }
 
-  // 4. Atualiza o "Buffer" com os dados atuais (sempre pegando a última escolha do usuário)
+  // Atualiza a memória com a versão mais recente selecionada
   dadosEmEspera = {
     xag: x,
     resultado: r,
@@ -222,28 +238,29 @@ function montarCNH() {
   };
 }
 
-// Função Real de Envio
 function enviarParaPlanilha(dados) {
-  // Evita enviar o mesmo chassi duas vezes seguidas
-  if (dados.xag === ultimoXagEnviado) return;
+  if (!dados || dados.xag === ultimoXagEnviado) return;
 
   ultimoXagEnviado = dados.xag;
   
-  fetch("https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec", {
+  fetch(APP_URL, {
     method: "POST",
     mode: "no-cors",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados)
   });
 
-  console.log("Linha gravada na planilha:", dados.xag);
+  console.log("Salvo na planilha:", dados.xag);
   setTimeout(atualizarContador, 2000);
 }
 
-// Botão Limpar: Além de limpar, ele entende que o trabalho atual terminou e envia os dados finais.
+// CORREÇÃO: Função Limpar unificada (Salva o atual antes de apagar)
 $clearBtn.onclick = () => {
-  if (dadosEmEspera) {
-    enviarParaPlanilha(dadosEmEspera); // Salva a última versão selecionada antes de apagar
+  if (dadosEmEspera && camposProntos()) {
+    enviarParaPlanilha(dadosEmEspera);
+    showToast('Dados salvos e campos limpos!');
+  } else {
+    showToast('Campos limpos!');
   }
   
   $xag.value = "";
@@ -252,52 +269,36 @@ $clearBtn.onclick = () => {
   $anoModelo.selectedIndex = 0;
   $output.textContent = "";
   $copyBtn.style.display = 'none';
-  dadosEmEspera = null; // Limpa o buffer
-  showToast('Dados enviados e tela limpa!');
+  dadosEmEspera = null; 
 };
 
-// Eventos
+// Configuração do botão copiar
+$copyBtn.onclick = () => {
+  navigator.clipboard.writeText($output.textContent)
+    .then(() => showToast('Chassi CNH copiado!'))
+    .catch(() => showToast('Erro ao copiar'));
+};
+
+// ---------- Eventos e Inicialização ----------
+
 $xag.addEventListener('input', montarCNH);
 $marca.addEventListener('change', montarCNH);
 $kit.addEventListener('change', montarCNH);
 $anoModelo.addEventListener('change', montarCNH);
 
-// ===== Contador global =====
 function atualizarContador(){
-  fetch("https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec")
+  fetch(APP_URL)
     .then(r => r.json())
     .then(data => {
-      document.getElementById("contador").innerText =
-        "Total de chassis convertidos: " + data.total;
+      $contador.innerText = "Total de chassis convertidos: " + (data.total || 0);
     })
     .catch(()=> {
-      document.getElementById("contador").innerText =
-        "Total de chassis convertidos: (erro ao carregar)";
+      $contador.innerText = "Total de chassis convertidos: (erro ao carregar)";
     });
 }
 
 document.addEventListener("DOMContentLoaded", atualizarContador);
-const $clearBtn = document.getElementById('clearBtn');
 
-$clearBtn.onclick = () => {
-  // Limpa o campo de texto
-  $xag.value = "";
-  
-  // Reseta os selects para a primeira opção (Selecione...)
-  $marca.selectedIndex = 0;
-  $kit.selectedIndex = 0;
-  $anoModelo.selectedIndex = 0;
-  
-  // Limpa o resultado visual e esconde o botão de copiar
-  $output.textContent = "";
-  $copyBtn.style.display = 'none';
-  
- 
-  
-  showToast('Campos zerados!');
-};
-
-// ===== Service Worker =====
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
