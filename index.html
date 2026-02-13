@@ -174,12 +174,15 @@ const $anoModelo = document.getElementById('anoModelo');
 const $output = document.getElementById('output');
 const $copyBtn = document.getElementById('copyBtn');
 
-// Variável de controle para evitar disparos duplicados
+// Variável global para rastrear o último envio bem-sucedido
 let ultimoChassiEnviado = "";
 
 function camposProntos(){
+  // Verifica se o chassi tem o tamanho correto e se os selects não estão vazios
   return $xag.value.trim().length >= 18 &&
-         $marca.value && $kit.value && $anoModelo.value;
+         $marca.value !== "" && 
+         $kit.value !== "" && 
+         $anoModelo.value !== "";
 }
 
 function montarCNH(){
@@ -188,10 +191,11 @@ function montarCNH(){
   const kit   = $kit.value;
   const anoModelo = $anoModelo.value;
 
+  // 1. SÓ AVANÇA SE TODOS OS CAMPOS ESTIVEREM PREENCHIDOS
   if (!camposProntos()){
     $output.textContent = '';
     $copyBtn.style.display = 'none';
-    return;
+    return; // Interrompe a execução aqui
   }
 
   const b = (marca === 'New Holland') ? 'N' : 'C';
@@ -223,18 +227,43 @@ function montarCNH(){
             semanaXAG +
             randomXAG;
 
+  // Exibe o resultado na tela
   $output.textContent = r;
   $copyBtn.style.display = 'block';
 
-  $copyBtn.onclick = () => {
-    navigator.clipboard.writeText(r)
-      .then(()=> showToast('Chassi CNH copiado!'))
-      .catch(()=> showToast('Erro ao copiar'));
-  };
-
-  // VERIFICAÇÃO: Só envia para o Google Sheets se o resultado mudou
-  if (r === ultimoChassiEnviado) return;
+  // 2. SÓ ENVIA PARA O GOOGLE SHEETS SE O CHASSI MUDOU
+  if (r === ultimoChassiEnviado) {
+    return; // Se for o mesmo chassi de antes, não envia de novo
+  }
+  
+  // Se chegou aqui, é um chassi novo e completo. Salva o estado e envia.
   ultimoChassiEnviado = r;
+
+  // ====== Enviar para Google Sheets ======
+  fetch("https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      xag: x,
+      resultado: r,
+      marca: marca,
+      kit: kit,
+      anoModelo: anoModelo
+    })
+  });
+
+  setTimeout(atualizarContador, 2000);
+}
+
+// 3. EVENTOS OTIMIZADOS
+// 'input' detecta digitação/colagem no chassi
+$xag.addEventListener('input', montarCNH);
+
+// 'change' detecta quando o usuário escolhe uma opção nos menus
+$marca.addEventListener('change', montarCNH);
+$kit.addEventListener('change', montarCNH);
+$anoModelo.addEventListener('change', montarCNH);
 
   // ====== Enviar para Google Sheets ======
   fetch("https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec", {
