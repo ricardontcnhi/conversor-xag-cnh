@@ -124,6 +124,7 @@ function showToast(msg){
     <div id="output"></div>
 
     <button id="copyBtn" class="copyBtn" style="display:none;">Copiar CNH</button>
+    <button id="clearBtn" style="background:#666; margin-top:10px;">Limpar Campos</button>
   </div>
 
 
@@ -277,7 +278,26 @@ function atualizarContador(){
 }
 
 document.addEventListener("DOMContentLoaded", atualizarContador);
+const $clearBtn = document.getElementById('clearBtn');
 
+$clearBtn.onclick = () => {
+  // Limpa o campo de texto
+  $xag.value = "";
+  
+  // Reseta os selects para a primeira opção (Selecione...)
+  $marca.selectedIndex = 0;
+  $kit.selectedIndex = 0;
+  $anoModelo.selectedIndex = 0;
+  
+  // Limpa o resultado visual e esconde o botão de copiar
+  $output.textContent = "";
+  $copyBtn.style.display = 'none';
+  
+  // Reseta a trava para permitir que o mesmo chassi seja enviado de novo se necessário
+  ultimoXagEnviado = "";
+  
+  showToast('Campos zerados!');
+};
 
 // ===== Service Worker =====
 if ('serviceWorker' in navigator) {
