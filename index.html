@@ -230,7 +230,7 @@ function montarCNH(){
   };
 
   // ====== Enviar para Google Sheets ======
-  fetch("https://script.google.com/macros/s/AKfycbwbjZv3BRktNRSmaYw_4fC3pOn1L9gbG-LBNWKLf2hjnGX9mizST8quHrU7QrSeisFzog/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec", {
     method: "POST",
     mode: "no-cors",
     headers: { "Content-Type": "application/json" },
@@ -244,7 +244,7 @@ function montarCNH(){
   });
 
   // Atualiza contador após salvar
-  setTimeout(atualizarContador, 1200);
+  setTimeout(atualizarContador, 2000);
 }
 
 // Atualiza automaticamente ao digitar / escolher
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', montarCNH);
 
 // ===== Contador global =====
 function atualizarContador(){
-  fetch("https://script.google.com/macros/s/AKfycbwbjZv3BRktNRSmaYw_4fC3pOn1L9gbG-LBNWKLf2hjnGX9mizST8quHrU7QrSeisFzog/exec")
+  fetch("https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec")
     .then(r => r.json())
     .then(data => {
       document.getElementById("contador").innerText =
