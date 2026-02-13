@@ -237,6 +237,9 @@ function enviarParaPlanilha(dados) {
   if (!dados || dados.xag === ultimoXagEnviado) return;
   ultimoXagEnviado = dados.xag;
   
+  // Sinaliza visualmente que está carregando
+  $contador.innerText = "Atualizando contador...";
+  
   fetch(APP_URL, {
     method: "POST",
     mode: "no-cors",
@@ -244,7 +247,7 @@ function enviarParaPlanilha(dados) {
     body: JSON.stringify(dados)
   });
 
-  // Aumentamos o tempo para 4 segundos para garantir que o Google processou a linha
+  // Aguarda 4 segundos para o Google Sheets processar a nova linha e recalcular
   setTimeout(atualizarContador, 4000); 
 }
 
@@ -286,6 +289,9 @@ $clearBtn.onclick = () => {
   $output.textContent = "";
   $copyBtn.style.display = 'none';
   dadosEmEspera = null; 
+  
+  // Força uma atualização para garantir que o número mude após o envio
+  setTimeout(atualizarContador, 2000);
 };
 
 $copyBtn.onclick = () => {
