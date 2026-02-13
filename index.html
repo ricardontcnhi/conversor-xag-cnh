@@ -6,72 +6,86 @@
 <title>Conversor Chassi XAG > CNH</title>
 <meta name="theme-color" content="#0066cc" />
 <link rel="manifest" href="manifest.json" />
-
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 
-  body{
-    margin:0;
-    font-family:Arial;
-    background:#f0f2f5;
-    color:#222;
-  }
-  .header{
-    background:#0066cc; color:white; padding:20px; text-align:center;
-    font-size:24px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);
-  }
-  .container{
-    padding:20px; max-width:920px; margin:0 auto;
-  }
-  .card{
-    background:white; border-radius:12px; padding:20px; margin-bottom:20px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.15);
-  }
-  label{
-    font-size:16px; font-weight:bold; margin-top:10px; display:block;
-  }
-  input, select{
-    width:100%; padding:15px; border-radius:8px; border:1px solid #ccc;
-    margin-top:5px; font-size:16px; display:block;
-  }
-  button{
-    width:100%; background:#0066cc; color:white; border:none; padding:15px;
-    border-radius:8px; font-size:18px; margin-top:20px; cursor:pointer;
-  }
-  button:hover{ background:#0055aa; }
-  .copyBtn{ background:#00aa55 !important; }
-  #output{
-    margin-top:15px; font-size:20px; font-weight:bold; color:green; text-align:center;
-  }
-  .footer{
-    text-align:center; font-size:14px; color:#555; margin-top:20px; margin-bottom:20px;
-  }
-  .steps{ font-size:16px; line-height:1.6; }
-  .steps li{ margin-bottom:12px; }
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f0f2f5;
+  color:#222;
+}
+
+.header{
+  background:#0066cc; color:white; padding:20px; text-align:center;
+  font-size:24px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);
+}
+
+.container{
+  padding:20px; max-width:920px; margin:0 auto;
+}
+
+.card{
+  background:white; border-radius:12px; padding:20px; margin-bottom:20px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);
+}
+
+label{
+  font-size:16px; font-weight:bold; margin-top:10px; display:block;
+}
+
+input, select{
+  width:100%; padding:15px; border-radius:8px; border:1px solid #ccc;
+  margin-top:5px; font-size:16px; display:block;
+}
+
+button{
+  width:100%; background:#0066cc; color:white; border:none; padding:15px;
+  border-radius:8px; font-size:18px; margin-top:20px; cursor:pointer;
+}
+
+button:hover{ background:#0055aa; }
+
+.copyBtn{
+  background:#00aa55 !important;
+}
+
+#output{
+  margin-top:15px; font-size:20px; font-weight:bold; color:green; text-align:center;
+}
+
+.footer{
+  text-align:center; font-size:14px; color:#555; margin-top:20px; margin-bottom:20px;
+}
+
+.steps{ font-size:16px; line-height:1.6; }
+.steps li{ margin-bottom:12px; }
 </style>
 </head>
 
 <body>
 
-<!-- Toast de notificação (substitui alert) -->
+<!-- Toast -->
 <div id="toast" style="
   position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
   background: #0066cc; color: #fff; padding: 14px 22px; border-radius: 8px;
   font-size: 16px; display: none; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
   transition: opacity 0.3s;">
 </div>
+
 <script>
-  function showToast(msg){
-    const t = document.getElementById("toast");
-    t.innerText = msg;
-    t.style.display = "block";
-    t.style.opacity = "1";
-    setTimeout(() => {
-      t.style.opacity = "0";
-      setTimeout(()=>{ t.style.display = "none"; }, 300);
-    }, 2200);
-  }
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.style.display = "block";
+  t.style.opacity = "1";
+  setTimeout(() => {
+    t.style.opacity = "0";
+    setTimeout(()=>{ t.style.display = "none"; }, 300);
+  }, 2200);
+}
 </script>
+
 
 <div class="header">Conversor Chassi XAG > CNH</div>
 
@@ -105,11 +119,17 @@
       <option value="2028">2028</option>
     </select>
 
-    <!-- Botão de gerar foi removido; geração agora é automática -->
-
     <div id="output"></div>
+
     <button id="copyBtn" class="copyBtn" style="display:none;">Copiar CNH</button>
   </div>
+
+
+  <!-- Contador Global -->
+  <div id="contador" style="text-align:center; margin-top:20px; font-size:18px; color:#333;">
+    Total de chassis convertidos: carregando...
+  </div>
+
 
   <div class="card">
     <h3>Como adicionar como App no Celular</h3>
@@ -125,8 +145,8 @@
   <div class="card">
     <h3>Como instalar no Computador</h3>
     <ol class="steps">
-      <li>Abra o site no Edge/Chrome (Windows/Mac).</li>
-      <li>Clique no ícone de instalação na barra de endereço (símbolo de + ou um monitor com setinha).</li>
+      <li>Abra o site no Edge/Chrome.</li>
+      <li>Clique no ícone de instalação na barra de endereço.</li>
       <li>Confirme em <b>Instalar</b>.</li>
       <li>O app será instalado como programa independente.</li>
     </ol>
@@ -138,22 +158,22 @@
 
 </div>
 
+
 <script>
-// ---------- Tabela VIN (10º dígito) para ano de fabricação XAG ----------
+// ---------- Tabela VIN ----------
 const VIN_YEAR_CODE = {
   2020:'L', 2021:'M', 2022:'N', 2023:'P', 2024:'R', 2025:'S',
   2026:'T', 2027:'V', 2028:'W', 2029:'X'
 };
 
-// ---------- Elementos ----------
-const $xag       = document.getElementById('xag');
-const $marca     = document.getElementById('marca');
-const $kit       = document.getElementById('kit');
+// ---------- Inputs ----------
+const $xag = document.getElementById('xag');
+const $marca = document.getElementById('marca');
+const $kit = document.getElementById('kit');
 const $anoModelo = document.getElementById('anoModelo');
-const $output    = document.getElementById('output');
-const $copyBtn   = document.getElementById('copyBtn');
+const $output = document.getElementById('output');
+const $copyBtn = document.getElementById('copyBtn');
 
-// ---------- Helpers ----------
 function camposProntos(){
   return $xag.value.trim().length >= 18 &&
          $marca.value && $kit.value && $anoModelo.value;
@@ -171,57 +191,63 @@ function montarCNH(){
     return;
   }
 
-  // Marca N/C
   const b = (marca === 'New Holland') ? 'N' : 'C';
-
-  // Kit B/F (ajuste se usar S também)
   const c = (kit === 'Basic') ? 'B' : 'F';
 
-  // Ano de fabricação do XAG (pos. 13 → índice 12)
-  const anoXAGdigit   = x.charAt(12);
+  const anoXAGdigit = x.charAt(12);
   const anoFabricacao = 2020 + Number(anoXAGdigit);
 
   const letraBloco = VIN_YEAR_CODE[anoFabricacao];
   if (!letraBloco){
-    showToast('Ano XAG fora da faixa suportada (2020–2029).');
-    $output.textContent = '';
-    $copyBtn.style.display = 'none';
+    showToast('Ano XAG inválido');
     return;
   }
 
-  // Último dígito do Ano‑modelo selecionado
   const digitoModelo = String(anoModelo).slice(-1);
-
-  // Bloco variante final = [VIN(ano XAG)] + [último dígito do ano‑modelo]
   const blocoVariante = letraBloco + digitoModelo;
 
-  // Partes finais do XAG
   const anoXAG    = x.substring(12,13);
   const semanaXAG = x.substring(13,15);
   const randomXAG = x.substring(15);
 
-  // Montagem CNH
   const r = 'X' +
-            x.substring(4,6) +   // produto (24)
-            b +                  // N/C
-            x.substring(6,8) +   // P1/P2
-            c +                  // B/F
-            blocoVariante +      // (ex.: S4, T6, W8...)
+            x.substring(4,6) +
+            b +
+            x.substring(6,8) +
+            c +
+            blocoVariante +
             anoXAG +
             semanaXAG +
             randomXAG;
 
-  // Exibir + copiar
   $output.textContent = r;
+
   $copyBtn.style.display = 'block';
   $copyBtn.onclick = () => {
     navigator.clipboard.writeText(r)
       .then(()=> showToast('Chassi CNH copiado!'))
       .catch(()=> showToast('Erro ao copiar'));
   };
+
+  // ====== Enviar para Google Sheets ======
+  fetch("https://script.google.com/macros/s/AKfycbwbjZv3BRktNRSmaYw_4fC3pOn1L9gbG-LBNWKLf2hjnGX9mizST8quHrU7QrSeisFzog/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      xag: x,
+      resultado: r,
+      marca: marca,
+      kit: kit,
+      anoModelo: anoModelo
+    })
+  });
+
+  // Atualiza contador após salvar
+  setTimeout(atualizarContador, 1200);
 }
 
-// ---------- Reagir automaticamente (sem botão) ----------
+// Atualiza automaticamente ao digitar / escolher
 ['input','change','keyup','paste'].forEach(evt => {
   $xag.addEventListener(evt, montarCNH, {passive:true});
 });
@@ -229,17 +255,36 @@ $marca.addEventListener('change', montarCNH, {passive:true});
 $kit.addEventListener('change', montarCNH, {passive:true});
 $anoModelo.addEventListener('change', montarCNH, {passive:true});
 
-// Gera ao abrir, caso já existam dados (opcional)
 document.addEventListener('DOMContentLoaded', montarCNH);
 
-// ---------- Service Worker ----------
+
+// ===== Contador global =====
+function atualizarContador(){
+  fetch("https://script.google.com/macros/s/AKfycbwbjZv3BRktNRSmaYw_4fC3pOn1L9gbG-LBNWKLf2hjnGX9mizST8quHrU7QrSeisFzog/exec")
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById("contador").innerText =
+        "Total de chassis convertidos: " + data.total;
+    })
+    .catch(()=> {
+      document.getElementById("contador").innerText =
+        "Total de chassis convertidos: (erro ao carregar)";
+    });
+}
+
+document.addEventListener("DOMContentLoaded", atualizarContador);
+
+
+// ===== Service Worker =====
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
 </script>
 
+
+<!-- ANTI-CURIOUS COMPLETO -->
 <script>
-/* ====== ANTI-CURIOUS (opcional) ====== */
+// (todo o seu código anti-curious foi mantido)
 document.addEventListener("contextmenu", (e) => {
   const tag = (e.target.tagName || "").toLowerCase();
   if (["input", "select", "textarea"].includes(tag)) return;
