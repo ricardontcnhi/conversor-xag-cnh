@@ -243,6 +243,7 @@ function enviarParaPlanilha(dados) {
 
   ultimoXagEnviado = dados.xag;
   
+  // Envia os dados para a planilha
   fetch(APP_URL, {
     method: "POST",
     mode: "no-cors",
@@ -251,7 +252,26 @@ function enviarParaPlanilha(dados) {
   });
 
   console.log("Salvo na planilha:", dados.xag);
-  setTimeout(atualizarContador, 2000);
+  
+  // Tenta atualizar o contador após um pequeno delay para dar tempo do Google processar
+  setTimeout(atualizarContador, 3000); 
+}
+
+function atualizarContador(){
+  // Adicionamos ?t= ao final para evitar que o navegador use o resultado antigo do cache
+  const urlComCacheBuster = APP_URL + "?t=" + new Date().getTime();
+  
+  fetch(urlComCacheBuster)
+    .then(r => r.json())
+    .then(data => {
+      // Atualiza o texto na tela com o valor real da planilha
+      if (data && data.total !== undefined) {
+        document.getElementById("contador").innerText = "Total de chassis convertidos: " + data.total;
+      }
+    })
+    .catch(()=> {
+      document.getElementById("contador").innerText = "Total de chassis convertidos: (erro ao carregar)";
+    });
 }
 
 // CORREÇÃO: Função Limpar unificada (Salva o atual antes de apagar)
