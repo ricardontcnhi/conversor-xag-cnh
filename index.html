@@ -244,24 +244,30 @@ function enviarParaPlanilha(dados) {
     body: JSON.stringify(dados)
   });
 
-  console.log("Salvo na planilha:", dados.xag);
-  // Aguarda 3 segundos para o Google processar e atualiza o contador
-  setTimeout(atualizarContador, 3000); 
+  // Aumentamos o tempo para 4 segundos para garantir que o Google processou a linha
+  setTimeout(atualizarContador, 4000); 
 }
 
-// CORREÇÃO: Função unificada que evita o cache do navegador
-function atualizarContador(){
-  const urlComCacheBuster = APP_URL + "?t=" + new Date().getTime();
+function atualizarContador() {
+  // O "Cache Buster" usa milissegundos para garantir que cada requisição seja única
+  const forcarAtualizacao = APP_URL + "?t=" + Math.random(); 
   
-  fetch(urlComCacheBuster)
-    .then(r => r.json())
+  fetch(forcarAtualizacao)
+    .then(response => {
+      if (!response.ok) throw new Error();
+      return response.json();
+    })
     .then(data => {
-      if (data && data.total !== undefined) {
-        $contador.innerText = "Total de chassis convertidos: " + data.total;
+      if (data && typeof data.total !== 'undefined') {
+        const elementoContador = document.getElementById("contador");
+        // Efeito visual simples para mostrar que o número mudou
+        elementoContador.style.opacity = "0.5";
+        elementoContador.innerText = "Total de chassis convertidos: " + data.total;
+        setTimeout(() => { elementoContador.style.opacity = "1"; }, 300);
       }
     })
-    .catch(()=> {
-      $contador.innerText = "Total de chassis convertidos: (erro ao carregar)";
+    .catch(() => {
+      console.log("Erro ao buscar contador. Tentando novamente...");
     });
 }
 
