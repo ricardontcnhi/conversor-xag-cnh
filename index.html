@@ -237,8 +237,6 @@ function enviarParaPlanilha(dados) {
   if (!dados || dados.xag === ultimoXagEnviado) return;
   ultimoXagEnviado = dados.xag;
   
- 
-  
   fetch(APP_URL, {
     method: "POST",
     mode: "no-cors",
@@ -246,8 +244,10 @@ function enviarParaPlanilha(dados) {
     body: JSON.stringify(dados)
   });
 
-  // Aguarda 4 segundos para o Google Sheets processar a nova linha e recalcular
-  setTimeout(atualizarContador, 4000); 
+  // Só tenta atualizar o contador se a página ainda estiver ativa
+  if (document.visibilityState === 'visible') {
+    setTimeout(atualizarContador, 4000);
+  }
 }
 
 function atualizarContador() {
@@ -310,6 +310,26 @@ document.addEventListener("DOMContentLoaded", atualizarContador);
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
+
+// Detecta quando o usuário tenta atualizar (F5) ou fechar a aba
+window.addEventListener('beforeunload', (event) => {
+  // Se houver um chassi pronto que ainda não foi enviado
+  if (dadosEmEspera && camposProntos() && dadosEmEspera.xag !== ultimoXagEnviado) {
+    
+    // Usamos o objeto 'navigator' que é mais confiável para envios ao fechar a página
+    // Ele envia os dados mesmo que a aba feche imediatamente
+    fetch(APP_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dadosEmEspera)
+    });
+    
+    // Opcional: Mostra um aviso padrão do navegador perguntando se deseja sair
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});  
 </script>
 
 
