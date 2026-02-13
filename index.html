@@ -186,8 +186,8 @@ const APP_URL = "https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5
 
 // ---------- Funções Principais ----------
 
-// CORREÇÃO: Função que verifica se o formulário está completo
 function camposProntos() {
+  // Ajustado para o comprimento de 20 conforme seu arquivo
   return $xag.value.trim().length === 20 && 
          $marca.value !== "" && 
          $kit.value !== "" && 
@@ -205,8 +205,6 @@ function montarCNH() {
 
   const b = ($marca.value === 'New Holland') ? 'N' : 'C';
   const c = ($kit.value === 'Basic') ? 'B' : 'F';
-  
-  // Cálculo do ano (posição 13 do XAG)
   const anoIndex = Number(x.charAt(12));
   const letraAno = VIN_YEAR_CODE[2020 + anoIndex];
   
@@ -219,16 +217,13 @@ function montarCNH() {
             (letraAno + String($anoModelo.value).slice(-1)) + 
             x.substring(12,13) + x.substring(13,15) + x.substring(15);
 
-  // Exibe na tela em tempo real
   $output.textContent = r;
   $copyBtn.style.display = 'block';
 
-  // Gatilho: Se mudar o Chassi XAG, envia o drone anterior que estava "em espera"
   if (dadosEmEspera && dadosEmEspera.xag !== x) {
     enviarParaPlanilha(dadosEmEspera);
   }
 
-  // Atualiza a memória com a versão mais recente selecionada
   dadosEmEspera = {
     xag: x,
     resultado: r,
@@ -240,10 +235,8 @@ function montarCNH() {
 
 function enviarParaPlanilha(dados) {
   if (!dados || dados.xag === ultimoXagEnviado) return;
-
   ultimoXagEnviado = dados.xag;
   
-  // Envia os dados para a planilha
   fetch(APP_URL, {
     method: "POST",
     mode: "no-cors",
@@ -252,29 +245,26 @@ function enviarParaPlanilha(dados) {
   });
 
   console.log("Salvo na planilha:", dados.xag);
-  
-  // Tenta atualizar o contador após um pequeno delay para dar tempo do Google processar
+  // Aguarda 3 segundos para o Google processar e atualiza o contador
   setTimeout(atualizarContador, 3000); 
 }
 
+// CORREÇÃO: Função unificada que evita o cache do navegador
 function atualizarContador(){
-  // Adicionamos ?t= ao final para evitar que o navegador use o resultado antigo do cache
   const urlComCacheBuster = APP_URL + "?t=" + new Date().getTime();
   
   fetch(urlComCacheBuster)
     .then(r => r.json())
     .then(data => {
-      // Atualiza o texto na tela com o valor real da planilha
       if (data && data.total !== undefined) {
-        document.getElementById("contador").innerText = "Total de chassis convertidos: " + data.total;
+        $contador.innerText = "Total de chassis convertidos: " + data.total;
       }
     })
     .catch(()=> {
-      document.getElementById("contador").innerText = "Total de chassis convertidos: (erro ao carregar)";
+      $contador.innerText = "Total de chassis convertidos: (erro ao carregar)";
     });
 }
 
-// CORREÇÃO: Função Limpar unificada (Salva o atual antes de apagar)
 $clearBtn.onclick = () => {
   if (dadosEmEspera && camposProntos()) {
     enviarParaPlanilha(dadosEmEspera);
@@ -292,7 +282,6 @@ $clearBtn.onclick = () => {
   dadosEmEspera = null; 
 };
 
-// Configuração do botão copiar
 $copyBtn.onclick = () => {
   navigator.clipboard.writeText($output.textContent)
     .then(() => showToast('Chassi CNH copiado!'))
@@ -300,22 +289,10 @@ $copyBtn.onclick = () => {
 };
 
 // ---------- Eventos e Inicialização ----------
-
 $xag.addEventListener('input', montarCNH);
 $marca.addEventListener('change', montarCNH);
 $kit.addEventListener('change', montarCNH);
 $anoModelo.addEventListener('change', montarCNH);
-
-function atualizarContador(){
-  fetch(APP_URL)
-    .then(r => r.json())
-    .then(data => {
-      $contador.innerText = "Total de chassis convertidos: " + (data.total || 0);
-    })
-    .catch(()=> {
-      $contador.innerText = "Total de chassis convertidos: (erro ao carregar)";
-    });
-}
 
 document.addEventListener("DOMContentLoaded", atualizarContador);
 
