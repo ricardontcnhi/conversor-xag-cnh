@@ -175,10 +175,11 @@ const $output = document.getElementById('output');
 const $copyBtn = document.getElementById('copyBtn');
 
 // Variável global para rastrear o último envio bem-sucedido
-let ultimoChassiEnviado = "";
+// Variável global para rastrear APENAS o último Chassi XAG enviado com sucesso
+let ultimoXagEnviado = "";
 
 function camposProntos(){
-  // Verifica se o chassi tem o tamanho correto e se os selects não estão vazios
+  // Verifica se o chassi tem os 18 caracteres e se todos os selects foram escolhidos
   return $xag.value.trim().length >= 18 &&
          $marca.value !== "" && 
          $kit.value !== "" && 
@@ -191,20 +192,20 @@ function montarCNH(){
   const kit   = $kit.value;
   const anoModelo = $anoModelo.value;
 
-  // 1. SÓ AVANÇA SE TODOS OS CAMPOS ESTIVEREM PREENCHIDOS
+  // 1. Validação básica: se não estiver tudo preenchido, limpa o output e para.
   if (!camposProntos()){
     $output.textContent = '';
     $copyBtn.style.display = 'none';
-    return; // Interrompe a execução aqui
+    return;
   }
 
+  // --- Lógica de cálculo do Chassi CNH ---
   const b = (marca === 'New Holland') ? 'N' : 'C';
   const c = (kit === 'Basic') ? 'B' : 'F';
-
   const anoXAGdigit = x.charAt(12);
   const anoFabricacao = 2020 + Number(anoXAGdigit);
-
   const letraBloco = VIN_YEAR_CODE[anoFabricacao];
+
   if (!letraBloco){
     showToast('Ano XAG inválido');
     return;
@@ -212,32 +213,29 @@ function montarCNH(){
 
   const digitoModelo = String(anoModelo).slice(-1);
   const blocoVariante = letraBloco + digitoModelo;
-
   const anoXAG    = x.substring(12,13);
   const semanaXAG = x.substring(13,15);
   const randomXAG = x.substring(15);
 
-  const r = 'X' +
-            x.substring(4,6) +
-            b +
-            x.substring(6,8) +
-            c +
-            blocoVariante +
-            anoXAG +
-            semanaXAG +
-            randomXAG;
+  const r = 'X' + x.substring(4,6) + b + x.substring(6,8) + c + 
+            blocoVariante + anoXAG + semanaXAG + randomXAG;
 
-  // Exibe o resultado na tela
+  // Atualiza a tela para o usuário
   $output.textContent = r;
   $copyBtn.style.display = 'block';
+  $copyBtn.onclick = () => {
+    navigator.clipboard.writeText(r)
+      .then(()=> showToast('Chassi CNH copiado!'))
+      .catch(()=> showToast('Erro ao copiar'));
+  };
 
-  // 2. SÓ ENVIA PARA O GOOGLE SHEETS SE O CHASSI MUDOU
-  if (r === ultimoChassiEnviado) {
-    return; // Se for o mesmo chassi de antes, não envia de novo
+  // 2. REGRA DE OURO: Só envia para o Sheets se o INPUT do Chassi XAG mudou
+  if (x === ultimoXagEnviado) {
+    return; // Se o XAG digitado for o mesmo do último envio, ignora o fetch
   }
   
-  // Se chegou aqui, é um chassi novo e completo. Salva o estado e envia.
-  ultimoChassiEnviado = r;
+  // Atualiza a trava com o chassi atual antes de enviar
+  ultimoXagEnviado = x;
 
   // ====== Enviar para Google Sheets ======
   fetch("https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec", {
@@ -256,25 +254,11 @@ function montarCNH(){
   setTimeout(atualizarContador, 2000);
 }
 
-// 3. EVENTOS OTIMIZADOS
-// 'input' detecta digitação/colagem no chassi
-$xag.addEventListener('input', montarCNH);
-
-// 'change' detecta quando o usuário escolhe uma opção nos menus
-$marca.addEventListener('change', montarCNH);
-$kit.addEventListener('change', montarCNH);
-$anoModelo.addEventListener('change', montarCNH);
-
-
-
-// Corrigido: Usando apenas 'input' para o campo de texto. 
-// Isso evita que 'keyup' e 'paste' disparem a função duas vezes.
+// Ouvintes de eventos simplificados
 $xag.addEventListener('input', montarCNH);
 $marca.addEventListener('change', montarCNH);
 $kit.addEventListener('change', montarCNH);
 $anoModelo.addEventListener('change', montarCNH);
-
-document.addEventListener('DOMContentLoaded', montarCNH);
 
 // ===== Contador global =====
 function atualizarContador(){
