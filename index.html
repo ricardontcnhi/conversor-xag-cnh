@@ -277,7 +277,7 @@ function atualizarContador() {
 $clearBtn.onclick = () => {
   if (dadosEmEspera && camposProntos()) {
     enviarParaPlanilha(dadosEmEspera);
-    showToast('Dados salvos e campos limpos!');
+    showToast('Campos limpos, preencha os dados!');
   } else {
     showToast('Campos limpos!');
   }
