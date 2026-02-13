@@ -188,7 +188,7 @@ const APP_URL = "https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5
 
 // CORREÇÃO: Função que verifica se o formulário está completo
 function camposProntos() {
-  return $xag.value.trim().length >= 17 && 
+  return $xag.value.trim().length === 20 && 
          $marca.value !== "" && 
          $kit.value !== "" && 
          $anoModelo.value !== "";
