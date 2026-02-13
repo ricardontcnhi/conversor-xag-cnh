@@ -177,87 +177,86 @@ const $anoModelo = document.getElementById('anoModelo');
 const $output = document.getElementById('output');
 const $copyBtn = document.getElementById('copyBtn');
 
-// Variável global para rastrear o último envio bem-sucedido
-// Variável global para rastrear APENAS o último Chassi XAG enviado com sucesso
+// Memória do que está na tela no momento
+let dadosEmEspera = null;
+// Memória do último Chassi XAG que foi efetivamente enviado
 let ultimoXagEnviado = "";
 
-function camposProntos(){
-  // Verifica se o chassi tem os 21 caracteres e se todos os selects foram escolhidos
-  return $xag.value.trim().length === 20 &&
-         $marca.value !== "" && 
-         $kit.value !== "" && 
-         $anoModelo.value !== "";
-}
-
-function montarCNH(){
+function montarCNH() {
   const x = $xag.value.trim();
-  const marca = $marca.value;
-  const kit   = $kit.value;
-  const anoModelo = $anoModelo.value;
-
-  // 1. Validação básica: se não estiver tudo preenchido, limpa o output e para.
-  if (!camposProntos()){
+  
+  // 1. Só gera o código visual se tudo estiver preenchido
+  if (!camposProntos()) {
     $output.textContent = '';
     $copyBtn.style.display = 'none';
     return;
   }
 
-  // --- Lógica de cálculo do Chassi CNH ---
-  const b = (marca === 'New Holland') ? 'N' : 'C';
-  const c = (kit === 'Basic') ? 'B' : 'F';
-  const anoXAGdigit = x.charAt(12);
-  const anoFabricacao = 2020 + Number(anoXAGdigit);
-  const letraBloco = VIN_YEAR_CODE[anoFabricacao];
-
-  if (!letraBloco){
-    showToast('Ano XAG inválido');
-    return;
-  }
-
-  const digitoModelo = String(anoModelo).slice(-1);
-  const blocoVariante = letraBloco + digitoModelo;
-  const anoXAG    = x.substring(12,13);
-  const semanaXAG = x.substring(13,15);
-  const randomXAG = x.substring(15);
+  // Cálculos do Chassi CNH (mesma lógica anterior)
+  const b = ($marca.value === 'New Holland') ? 'N' : 'C';
+  const c = ($kit.value === 'Basic') ? 'B' : 'F';
+  const letraAno = VIN_YEAR_CODE[2020 + Number(x.charAt(12))];
+  if (!letraAno) return;
 
   const r = 'X' + x.substring(4,6) + b + x.substring(6,8) + c + 
-            blocoVariante + anoXAG + semanaXAG + randomXAG;
+            (letraAno + String($anoModelo.value).slice(-1)) + 
+            x.substring(12,13) + x.substring(13,15) + x.substring(15);
 
-  // Atualiza a tela para o usuário
+  // 2. Atualiza a tela (Usuário vê a mudança em tempo real)
   $output.textContent = r;
   $copyBtn.style.display = 'block';
-  $copyBtn.onclick = () => {
-    navigator.clipboard.writeText(r)
-      .then(()=> showToast('Chassi CNH copiado!'))
-      .catch(()=> showToast('Erro ao copiar'));
-  };
 
-  // 2. REGRA DE OURO: Só envia para o Sheets se o INPUT do Chassi XAG mudou
-  if (x === ultimoXagEnviado) {
-    return; // Se o XAG digitado for o mesmo do último envio, ignora o fetch
+  // 3. LOGICA DE DETECÇÃO DE MUDANÇA DE DRONE
+  // Se o usuário digitou um NOVO XAG e já havia um drone anterior preenchido, salva o anterior.
+  if (dadosEmEspera && dadosEmEspera.xag !== x) {
+    enviarParaPlanilha(dadosEmEspera);
   }
-  
-  // Atualiza a trava com o chassi atual antes de enviar
-  ultimoXagEnviado = x;
 
-  // ====== Enviar para Google Sheets ======
+  // 4. Atualiza o "Buffer" com os dados atuais (sempre pegando a última escolha do usuário)
+  dadosEmEspera = {
+    xag: x,
+    resultado: r,
+    marca: $marca.value,
+    kit: $kit.value,
+    anoModelo: $anoModelo.value
+  };
+}
+
+// Função Real de Envio
+function enviarParaPlanilha(dados) {
+  // Evita enviar o mesmo chassi duas vezes seguidas
+  if (dados.xag === ultimoXagEnviado) return;
+
+  ultimoXagEnviado = dados.xag;
+  
   fetch("https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec", {
     method: "POST",
     mode: "no-cors",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      xag: x,
-      resultado: r,
-      marca: marca,
-      kit: kit,
-      anoModelo: anoModelo
-    })
+    body: JSON.stringify(dados)
   });
 
+  console.log("Linha gravada na planilha:", dados.xag);
   setTimeout(atualizarContador, 2000);
 }
 
-// Ouvintes de eventos simplificados
+// Botão Limpar: Além de limpar, ele entende que o trabalho atual terminou e envia os dados finais.
+$clearBtn.onclick = () => {
+  if (dadosEmEspera) {
+    enviarParaPlanilha(dadosEmEspera); // Salva a última versão selecionada antes de apagar
+  }
+  
+  $xag.value = "";
+  $marca.selectedIndex = 0;
+  $kit.selectedIndex = 0;
+  $anoModelo.selectedIndex = 0;
+  $output.textContent = "";
+  $copyBtn.style.display = 'none';
+  dadosEmEspera = null; // Limpa o buffer
+  showToast('Dados enviados e tela limpa!');
+};
+
+// Eventos
 $xag.addEventListener('input', montarCNH);
 $marca.addEventListener('change', montarCNH);
 $kit.addEventListener('change', montarCNH);
