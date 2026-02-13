@@ -95,7 +95,7 @@ function showToast(msg){
     <h3>Conversor</h3>
 
     <label>Chassi XAG:</label>
-    <input id="xag" placeholder="Digite o chassi XAG" />
+    <input id="xag" maxlength="21" placeholder="Digite o chassi XAG" />
 
     <label>Marca:</label>
 <select id="marca">
@@ -181,8 +181,8 @@ const $copyBtn = document.getElementById('copyBtn');
 let ultimoXagEnviado = "";
 
 function camposProntos(){
-  // Verifica se o chassi tem os 18 caracteres e se todos os selects foram escolhidos
-  return $xag.value.trim().length >= 18 &&
+  // Verifica se o chassi tem os 21 caracteres e se todos os selects foram escolhidos
+  return $xag.value.trim().length === 21 &&
          $marca.value !== "" && 
          $kit.value !== "" && 
          $anoModelo.value !== "";
