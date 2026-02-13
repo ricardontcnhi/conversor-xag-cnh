@@ -237,8 +237,7 @@ function enviarParaPlanilha(dados) {
   if (!dados || dados.xag === ultimoXagEnviado) return;
   ultimoXagEnviado = dados.xag;
   
-  // Sinaliza visualmente que está carregando
-  $contador.innerText = "Atualizando contador...";
+ 
   
   fetch(APP_URL, {
     method: "POST",
