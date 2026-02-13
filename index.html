@@ -264,7 +264,7 @@ function atualizarContador() {
         const elementoContador = document.getElementById("contador");
         // Efeito visual simples para mostrar que o número mudou
         elementoContador.style.opacity = "0.5";
-        elementoContador.innerText = "Total de chassis convertidos: " + data.total;
+        elementoContador.innerText = "Total de chassis convertidos pelo app: " + data.total;
         setTimeout(() => { elementoContador.style.opacity = "1"; }, 300);
       }
     })
@@ -278,7 +278,7 @@ $clearBtn.onclick = () => {
     enviarParaPlanilha(dadosEmEspera);
     showToast('Campos limpos, preencha os dados!');
   } else {
-    showToast('Campos limpos!');
+    showToast('Campos limpos, preencha os dados!');
   }
   
   $xag.value = "";
