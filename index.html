@@ -98,26 +98,28 @@ function showToast(msg){
     <input id="xag" placeholder="Digite o chassi XAG" />
 
     <label>Marca:</label>
-    <select id="marca">
-      <option>New Holland</option>
-      <option>Case</option>
-    </select>
+<select id="marca">
+  <option value="" selected disabled>Selecione a marca...</option>
+  <option value="New Holland">New Holland</option>
+  <option value="Case">Case</option>
+</select>
 
-    <label>Kit:</label>
-    <select id="kit">
-      <option>Basic</option>
-      <option>Full</option>
-    </select>
+<label>Kit:</label>
+<select id="kit">
+  <option value="" selected disabled>Selecione o kit...</option>
+  <option value="Basic">Basic</option>
+  <option value="Full">Full</option>
+</select>
 
-    <label>Ano‑modelo:</label>
-    <select id="anoModelo">
-      <option value="">Selecione...</option>
-      <option value="2024">2024</option>
-      <option value="2025">2025</option>
-      <option value="2026">2026</option>
-      <option value="2027">2027</option>
-      <option value="2028">2028</option>
-    </select>
+<label>Ano‑modelo:</label>
+<select id="anoModelo">
+  <option value="" selected disabled>Selecione o ano...</option>
+  <option value="2024">2024</option>
+  <option value="2025">2025</option>
+  <option value="2026">2026</option>
+  <option value="2027">2027</option>
+  <option value="2028">2028</option>
+</select>
 
     <div id="output"></div>
 
