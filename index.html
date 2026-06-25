@@ -1,205 +1,676 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-brand="newholland">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Conversor Chassi XAG > CNH</title>
-<meta name="theme-color" content="#0066cc" />
+<title>Conversor Chassi XAG → CNH</title>
+<meta name="theme-color" content="#00539B" />
 <link rel="manifest" href="manifest.json" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f0f2f5;
-  color:#222;
+:root {
+  --accent: #00539B;
+  --accent-rgb: 0, 83, 155;
+  --accent-hover: #003F75;
+  --accent-glow: rgba(0, 83, 155, 0.10);
+  --accent-subtle: rgba(0, 83, 155, 0.04);
 }
 
-.header{
-  background:#0066cc; color:white; padding:20px; text-align:center;
-  font-size:24px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);
+[data-brand="caseih"] {
+  --accent: #BE1E2D;
+  --accent-rgb: 190, 30, 45;
+  --accent-hover: #9A1724;
+  --accent-glow: rgba(190, 30, 45, 0.10);
+  --accent-subtle: rgba(190, 30, 45, 0.04);
 }
 
-.container{
-  padding:20px; max-width:920px; margin:0 auto;
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #F5F6F8;
+  color: #1A1D23;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
 }
 
-.card{
-  background:white; border-radius:12px; padding:20px; margin-bottom:20px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.15);
+body, .brand-transition, .brand-transition *,
+.top-bar, .brand-btn, .result-value,
+.btn-primary, .field-input, .field-select, .counter-num {
+  transition: background-color 0.35s ease, border-color 0.35s ease,
+              color 0.25s ease, box-shadow 0.35s ease;
 }
 
-label{
-  font-size:16px; font-weight:bold; margin-top:10px; display:block;
+.top-bar {
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb), 0.3));
 }
 
-input, select{
-  width:100%; padding:15px; border-radius:8px; border:1px solid #ccc;
-  margin-top:5px; font-size:16px; display:block;
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(var(--accent-rgb), 0.03) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-button{
-  width:100%; background:#0066cc; color:white; border:none; padding:15px;
-  border-radius:8px; font-size:18px; margin-top:20px; cursor:pointer;
+.app-wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-button:hover{ background:#0055aa; }
-
-.copyBtn{
-  background:#00aa55 !important;
+.app-header {
+  padding: 36px 0 8px;
+  text-align: center;
 }
 
-#output{
-  margin-top:15px; font-size:20px; font-weight:bold; color:green; text-align:center;
+.app-header h1 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #6B7280;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.footer{
-  text-align:center; font-size:14px; color:#555; margin-top:20px; margin-bottom:20px;
+.app-header .subtitle {
+  font-size: 14px;
+  color: #9CA3AF;
+  margin-top: 3px;
+  letter-spacing: 0.04em;
 }
 
-.steps{ font-size:16px; line-height:1.6; }
-.steps li{ margin-bottom:12px; }
+.brand-toggle {
+  display: flex;
+  background: #E8EAEF;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  margin: 24px auto 0;
+  width: fit-content;
+}
+
+.brand-btn {
+  padding: 12px 34px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #9CA3AF;
+  letter-spacing: 0.01em;
+}
+
+.brand-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(var(--accent-rgb), 0.25);
+}
+
+.brand-btn:not(.active):hover {
+  color: var(--accent);
+}
+
+.main-card {
+  margin-top: 28px;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 24px rgba(0,0,0,0.03);
+  padding: 28px 24px 24px;
+}
+
+.field-group {
+  margin-top: 22px;
+}
+
+.field-group:first-of-type {
+  margin-top: 0;
+}
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6B7280;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.field-input, .field-select {
+  width: 100%;
+  padding: 15px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #E5E7EB;
+  font-size: 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  color: #1A1D23;
+  background: #FAFAFB;
+  outline: none;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.field-input::placeholder {
+  color: #B8BCC6;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.field-input:focus, .field-select:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+.field-select {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 17px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+
+.field-select option { color: #1A1D23; }
+
+.divider {
+  height: 1px;
+  background: #F0F1F3;
+  margin: 26px 0;
+}
+
+.result-box {
+  background: var(--accent-subtle);
+  border: 1.5px solid rgba(var(--accent-rgb), 0.12);
+  border-radius: 14px;
+  padding: 24px 20px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.result-box.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.result-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+.result-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  word-break: break-all;
+  line-height: 1.35;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn-primary {
+  flex: 1;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  min-height: 50px;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.btn-copy {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-copy:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.25);
+}
+
+.btn-copy:active { transform: translateY(0); }
+
+.btn-clear {
+  flex: 0 0 auto;
+  padding: 16px 24px;
+  border-radius: 12px;
+  border: 1.5px solid #E5E7EB;
+  background: #fff;
+  color: #6B7280;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 50px;
+}
+
+.btn-clear:hover {
+  border-color: #D1D5DB;
+  background: #F9FAFB;
+  color: #374151;
+}
+
+.btn-row.hidden { display: none; }
+
+.counter-card {
+  margin-top: 16px;
+  text-align: center;
+  padding: 20px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.counter-label {
+  font-size: 13px;
+  color: #9CA3AF;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.counter-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.info-card {
+  margin-top: 16px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.info-card-header {
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: background 0.15s ease;
+  min-height: 52px;
+}
+
+.info-card-header:hover { background: #FAFAFB; }
+
+.info-card-header svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #C4C8D4;
+  flex-shrink: 0;
+}
+
+.info-card-header.open svg { transform: rotate(180deg); }
+
+.info-card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-card-body.open { max-height: 300px; }
+
+.info-card-body ol {
+  padding: 0 20px 20px 38px;
+  font-size: 16px;
+  color: #6B7280;
+  line-height: 1.75;
+}
+
+.info-card-body ol li { margin-bottom: 6px; }
+.info-card-body ol li b { color: #374151; }
+
+.app-footer {
+  text-align: center;
+  padding: 32px 0 36px;
+  font-size: 13px;
+  color: #C4C8D4;
+  letter-spacing: 0.01em;
+}
+
+.app-footer span {
+  color: #D1D5DB;
+  margin: 0 8px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1A1D23;
+  color: #fff;
+  padding: 16px 30px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+button:focus-visible, select:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .app-wrapper { padding: 0 16px; }
+  .app-header { padding-top: 24px; }
+  .brand-btn { padding: 11px 24px; font-size: 15px; }
+  .main-card { padding: 24px 18px 20px; border-radius: 16px; }
+  .field-input, .field-select { padding: 14px 14px; }
+  .field-select { font-size: 16px; }
+  .result-value { font-size: 22px; }
+  .btn-primary { padding: 14px 16px; min-height: 48px; }
+  .btn-clear { padding: 14px 18px; min-height: 48px; }
+  .counter-num { font-size: 30px; }
+  .info-card-header { padding: 14px 16px; min-height: 48px; }
+  .info-card-body ol { padding-left: 30px; font-size: 15px; }
+  .toast { font-size: 15px; padding: 14px 24px; bottom: 20px; }
+}
+
+@media (min-width: 401px) and (max-width: 560px) {
+  .app-wrapper { padding: 0 20px; }
+  .main-card { padding: 28px 22px 24px; }
+}
+
+@media (min-width: 561px) {
+  .app-wrapper { padding: 0 32px; }
+  .app-header { padding-top: 56px; }
+  .app-header h1 { font-size: 14px; }
+  .app-header .subtitle { font-size: 12px; }
+  .brand-btn { padding: 10px 36px; font-size: 14px; }
+  .main-card { margin-top: 32px; padding: 32px 32px 28px; }
+  .field-group { margin-top: 20px; }
+  .field-label { font-size: 12px; margin-bottom: 7px; }
+  .field-input { font-size: 16px; padding: 13px 16px; }
+  .field-select { font-size: 14px; padding: 13px 16px; }
+  .divider { margin: 28px 0; }
+  .result-box { padding: 22px 24px; }
+  .result-label { font-size: 11px; }
+  .result-value { font-size: 24px; }
+  .btn-primary { padding: 14px 24px; font-size: 14px; min-height: 46px; }
+  .btn-clear { padding: 14px 24px; font-size: 14px; min-height: 46px; }
+  .counter-card { margin-top: 18px; padding: 18px; }
+  .counter-num { font-size: 30px; }
+  .counter-label { font-size: 11px; }
+  .info-card { margin-top: 18px; }
+  .info-card-header { padding: 15px 22px; font-size: 14px; min-height: 46px; }
+  .info-card-body ol { font-size: 14px; padding-left: 38px; }
+  .toast { font-size: 14px; padding: 13px 26px; }
+  .app-footer { padding: 36px 0 40px; font-size: 11px; }
+}
 </style>
 </head>
 
 <body>
 
-<!-- Toast -->
-<div id="toast" style="
-  position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-  background: #0066cc; color: #fff; padding: 14px 22px; border-radius: 8px;
-  font-size: 16px; display: none; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  transition: opacity 0.3s;">
+<div class="top-bar"></div>
+
+<div class="app-wrapper">
+
+  <header class="app-header">
+    <h1>Conversor de Chassi</h1>
+    <p class="subtitle">XAG → CNH Industrial</p>
+    <div class="brand-toggle brand-transition">
+      <button class="brand-btn active" data-brand-btn="newholland" onclick="setBrand('newholland')" aria-label="New Holland" aria-pressed="true">New Holland</button>
+      <button class="brand-btn" data-brand-btn="caseih" onclick="setBrand('caseih')" aria-label="Case IH" aria-pressed="false">Case IH</button>
+    </div>
+  </header>
+
+  <section class="main-card brand-transition">
+    <div class="field-group">
+      <label class="field-label" for="xag">Chassi XAG</label>
+      <input class="field-input" id="xag" type="text" maxlength="20" placeholder="Cole ou digite aqui..." autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="kit">Kit</label>
+      <select class="field-select" id="kit">
+        <option value="" selected disabled>Selecione o kit...</option>
+        <option value="Basic">Basic</option>
+        <option value="Full">Full</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="anoModelo">Ano-modelo (Atualmente todos são 2024)</label>
+      <select class="field-select" id="anoModelo">
+        <option value="" selected disabled>Selecione o ano...</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+      </select>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-box" id="resultBox">
+      <div class="result-label">Chassi CNH</div>
+      <div class="result-value" id="output"></div>
+    </div>
+
+    <div class="btn-row hidden" id="btnRow">
+      <button class="btn-primary btn-copy brand-transition" id="copyBtn" aria-label="Copiar chassi CNH">Copiar</button>
+      <button class="btn-clear" id="clearBtn" aria-label="Limpar campos">Limpar</button>
+    </div>
+  </section>
+
+  <div class="counter-card brand-transition">
+    <div class="counter-label">Chassis convertidos</div>
+    <div class="counter-num" id="contador">—</div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-card-header" id="infoHeader1" onclick="toggleInfo('infoBody1','infoHeader1')" role="button" tabindex="0" aria-expanded="false">
+      Instalar no celular
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+    <div class="info-card-body" id="infoBody1">
+      <ol>
+        <li>Abra este site no navegador do celular.</li>
+        <li>Aguarde o aviso <b>"Adicionar à tela inicial"</b>.</li>
+        <li>Se não aparecer, toque em <b>⋮</b> e depois <b>Adicionar à tela inicial</b>.</li>
+        <li>Confirme — o app será instalado como ícone real.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-card-header" id="infoHeader2" onclick="toggleInfo('infoBody2','infoHeader2')" role="button" tabindex="0" aria-expanded="false">
+      Instalar no computador
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+    <div class="info-card-body" id="infoBody2">
+      <ol>
+        <li>Abra no Edge ou Chrome.</li>
+        <li>Clique no ícone de instalação na barra de endereço.</li>
+        <li>Confirme em <b>Instalar</b>.</li>
+        <li>O app funcionará como programa independente.</li>
+      </ol>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    Centro de Treinamento Curitiba<span>·</span>V.250626<span>·</span>Ricardo Tokumo
+  </footer>
+
 </div>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+
 <script>
-function showToast(msg){
-  const t = document.getElementById("toast");
-  t.innerText = msg;
-  t.style.display = "block";
-  t.style.opacity = "1";
-  setTimeout(() => {
-    t.style.opacity = "0";
-    setTimeout(()=>{ t.style.display = "none"; }, 300);
-  }, 2200);
+// ==========================================
+// TROCA DE MARCA
+// ==========================================
+function setBrand(brand) {
+  document.documentElement.setAttribute('data-brand', brand);
+  document.querySelectorAll('.brand-btn').forEach(btn => {
+    const active = btn.dataset.brandBtn === brand;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active);
+  });
+  $marca.value = brand === 'newholland' ? 'New Holland' : 'Case';
+  montarCNH();
 }
-</script>
 
+// ==========================================
+// ACCORDION
+// ==========================================
+function toggleInfo(bodyId, headerId) {
+  const body = document.getElementById(bodyId);
+  const header = document.getElementById(headerId);
+  const isOpen = body.classList.toggle('open');
+  header.classList.toggle('open', isOpen);
+  header.setAttribute('aria-expanded', isOpen);
+}
 
-<div class="header">Conversor Chassi XAG > CNH</div>
+document.querySelectorAll('.info-card-header').forEach(h => {
+  h.addEventListener('keydown', e => { if (e.key === 'Enter') h.click(); });
+});
 
-<div class="container">
+// ==========================================
+// TOAST
+// ==========================================
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
 
-  <div class="card">
-    <h3>Conversor</h3>
+// ==========================================
+// COPIAR COM FALLBACK (funciona em HTTP, PWA, WebAPK)
+// ==========================================
+function copiarFallback(texto) {
+  const ta = document.createElement('textarea');
+  ta.value = texto;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;user-select:text;-webkit-user-select:text';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('Chassi CNH copiado!');
+  } catch (e) {
+    showToast('Erro ao copiar. Selecione e copie manualmente.');
+  }
+  document.body.removeChild(ta);
+}
 
-    <label>Chassi XAG:</label>
-    <input id="xag" maxlength="20" placeholder="Digite o chassi XAG" />
-
-    <label>Marca:</label>
-<select id="marca">
-  <option value="" selected disabled>Selecione a marca...</option>
-  <option value="New Holland">New Holland</option>
-  <option value="Case">Case</option>
-</select>
-
-<label>Kit:</label>
-<select id="kit">
-  <option value="" selected disabled>Selecione o kit...</option>
-  <option value="Basic">Basic</option>
-  <option value="Full">Full</option>
-</select>
-
-<label>Ano‑modelo: (atualmente todos são 2024, só muda com lançamento de novo modelo)</label>
-<select id="anoModelo">
-  <option value="" selected disabled>Selecione o ano do modelo...</option>
-  <option value="2024">2024</option>
-  <option value="2025">2025</option>
-  <option value="2026">2026</option>
-  <option value="2027">2027</option>
-  <option value="2028">2028</option>
-</select>
-
-    <div id="output"></div>
-
-    <button id="copyBtn" class="copyBtn" style="display:none;">Copiar CNH</button>
-    <button id="clearBtn" style="background:#666; margin-top:10px;">Limpar Campos</button>
-  </div>
-
-
-  <!-- Contador Global -->
-  <div id="contador" style="text-align:center; margin-top:20px; font-size:18px; color:#333;">
-    Total de chassis convertidos: carregando...
-  </div>
-
-
-  <div class="card">
-    <h3>Como adicionar como App no Celular</h3>
-    <ol class="steps">
-      <li>Abra este site no navegador oficial do celular.</li>
-      <li>Aguarde aparecer o aviso: <b>“Adicionar à tela inicial”</b>.</li>
-      <li>Se não aparecer, toque nos três pontinhos (⋮) do navegador</li>
-      <li>Toque em <b>Adicionar à tela inicial</b>.</li>
-      <li>Confirme e o WebAPK será instalado como aplicativo real.</li>
-    </ol>
-  </div>
-
-  <div class="card">
-    <h3>Como instalar no Computador</h3>
-    <ol class="steps">
-      <li>Abra o site no Edge/Chrome.</li>
-      <li>Clique no ícone de instalação na barra de endereço.</li>
-      <li>Confirme em <b>Instalar</b>.</li>
-      <li>O app será instalado como programa independente.</li>
-    </ol>
-  </div>
-
-  <div class="footer">
-    Centro de Treinamento Curitiba - 12/02/2026 - Autor: Ricardo Tokumo
-  </div>
-
-</div>
-
-
-<script>
-// ---------- Tabela VIN ----------
+// ==========================================
+// LÓGICA PRINCIPAL
+// ==========================================
 const VIN_YEAR_CODE = {
   2020:'L', 2021:'M', 2022:'N', 2023:'P', 2024:'R', 2025:'S',
   2026:'T', 2027:'V', 2028:'W', 2029:'X'
 };
 
-// ---------- Elementos do DOM ----------
 const $xag = document.getElementById('xag');
-const $marca = document.getElementById('marca');
 const $kit = document.getElementById('kit');
 const $anoModelo = document.getElementById('anoModelo');
 const $output = document.getElementById('output');
+const $resultBox = document.getElementById('resultBox');
+const $btnRow = document.getElementById('btnRow');
 const $copyBtn = document.getElementById('copyBtn');
 const $clearBtn = document.getElementById('clearBtn');
 const $contador = document.getElementById('contador');
 
-// Variáveis de Controle
+// Select de marca oculto (controlado pelo toggle visual)
+const $marca = document.createElement('select');
+ $marca.id = 'marca';
+ $marca.style.display = 'none';
+ $marca.innerHTML = '<option value="New Holland" selected>New Holland</option><option value="Case">Case</option>';
+document.body.appendChild($marca);
+
 let dadosEmEspera = null;
 let ultimoXagEnviado = "";
 const APP_URL = "https://script.google.com/macros/s/AKfycbzY-QIR1iSY-nHHKVx7yfw5LC0PlrJ33C1i76O1jkr1w2H8THz_m1zGZ_zur4oUvAUe0g/exec";
 
-// ---------- Funções Principais ----------
-
 function camposProntos() {
-  // Ajustado para o comprimento de 20 conforme seu arquivo
-  return $xag.value.trim().length === 20 && 
-         $marca.value !== "" && 
-         $kit.value !== "" && 
+  return $xag.value.trim().length === 20 &&
+         $marca.value !== "" &&
+         $kit.value !== "" &&
          $anoModelo.value !== "";
 }
 
 function montarCNH() {
   const x = $xag.value.trim();
-  
   if (!camposProntos()) {
     $output.textContent = '';
-    $copyBtn.style.display = 'none';
+    $resultBox.classList.remove('visible');
+    $btnRow.classList.add('hidden');
     return;
   }
 
@@ -207,28 +678,29 @@ function montarCNH() {
   const c = ($kit.value === 'Basic') ? 'B' : 'F';
   const anoIndex = Number(x.charAt(12));
   const letraAno = VIN_YEAR_CODE[2020 + anoIndex];
-  
+
   if (!letraAno) {
     $output.textContent = "Erro: Ano XAG inválido";
+    $resultBox.classList.add('visible');
+    $btnRow.classList.add('hidden');
     return;
   }
 
-  const r = 'X' + x.substring(4,6) + b + x.substring(6,8) + c + 
-            (letraAno + String($anoModelo.value).slice(-1)) + 
+  const r = 'X' + x.substring(4,6) + b + x.substring(6,8) + c +
+            (letraAno + String($anoModelo.value).slice(-1)) +
             x.substring(12,13) + x.substring(13,15) + x.substring(15);
 
   $output.textContent = r;
-  $copyBtn.style.display = 'block';
+  $resultBox.classList.add('visible');
+  $btnRow.classList.remove('hidden');
 
   if (dadosEmEspera && dadosEmEspera.xag !== x) {
     enviarParaPlanilha(dadosEmEspera);
   }
 
   dadosEmEspera = {
-    xag: x,
-    resultado: r,
-    marca: $marca.value,
-    kit: $kit.value,
+    xag: x, resultado: r,
+    marca: $marca.value, kit: $kit.value,
     anoModelo: $anoModelo.value
   };
 }
@@ -236,106 +708,81 @@ function montarCNH() {
 function enviarParaPlanilha(dados) {
   if (!dados || dados.xag === ultimoXagEnviado) return;
   ultimoXagEnviado = dados.xag;
-  
   fetch(APP_URL, {
-    method: "POST",
-    mode: "no-cors",
+    method: "POST", mode: "no-cors",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados)
   });
-
-  // Só tenta atualizar o contador se a página ainda estiver ativa
-  if (document.visibilityState === 'visible') {
-    setTimeout(atualizarContador, 4000);
-  }
+  if (document.visibilityState === 'visible') setTimeout(atualizarContador, 4000);
 }
 
 function atualizarContador() {
-  // O "Cache Buster" usa milissegundos para garantir que cada requisição seja única
-  const forcarAtualizacao = APP_URL + "?t=" + Math.random(); 
-  
-  fetch(forcarAtualizacao)
-    .then(response => {
-      if (!response.ok) throw new Error();
-      return response.json();
-    })
+  fetch(APP_URL + "?t=" + Math.random())
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
     .then(data => {
       if (data && typeof data.total !== 'undefined') {
-        const elementoContador = document.getElementById("contador");
-        // Efeito visual simples para mostrar que o número mudou
-        elementoContador.style.opacity = "0.5";
-        elementoContador.innerText = "Total de chassis convertidos pelo app: " + data.total;
-        setTimeout(() => { elementoContador.style.opacity = "1"; }, 300);
+        $contador.style.opacity = "0.4";
+        $contador.textContent = data.total;
+        setTimeout(() => { $contador.style.opacity = "1"; }, 300);
       }
     })
-    .catch(() => {
-      console.log("Erro ao buscar contador. Tentando novamente...");
-    });
+    .catch(() => {});
 }
 
-$clearBtn.onclick = () => {
-  if (dadosEmEspera && camposProntos()) {
-    enviarParaPlanilha(dadosEmEspera);
-    showToast('Campos limpos, preencha os dados!');
+// ==========================================
+// BOTÃO COPIAR (com fallback para HTTP)
+// ==========================================
+ $copyBtn.onclick = () => {
+  const texto = $output.textContent;
+  if (!texto) return;
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(texto)
+      .then(() => showToast('Chassi CNH copiado!'))
+      .catch(() => copiarFallback(texto));
   } else {
-    showToast('Campos limpos, preencha os dados!');
+    copiarFallback(texto);
   }
-  
+};
+
+ $clearBtn.onclick = () => {
+  if (dadosEmEspera && camposProntos()) enviarParaPlanilha(dadosEmEspera);
+  showToast('Campos limpos');
   $xag.value = "";
   $marca.selectedIndex = 0;
   $kit.selectedIndex = 0;
   $anoModelo.selectedIndex = 0;
   $output.textContent = "";
-  $copyBtn.style.display = 'none';
-  dadosEmEspera = null; 
-  
-  // Força uma atualização para garantir que o número mude após o envio
+  $resultBox.classList.remove('visible');
+  $btnRow.classList.add('hidden');
+  dadosEmEspera = null;
   setTimeout(atualizarContador, 2000);
 };
 
-$copyBtn.onclick = () => {
-  navigator.clipboard.writeText($output.textContent)
-    .then(() => showToast('Chassi CNH copiado!'))
-    .catch(() => showToast('Erro ao copiar'));
-};
-
-// ---------- Eventos e Inicialização ----------
-$xag.addEventListener('input', montarCNH);
-$marca.addEventListener('change', montarCNH);
-$kit.addEventListener('change', montarCNH);
-$anoModelo.addEventListener('change', montarCNH);
-
+ $xag.addEventListener('input', montarCNH);
+ $kit.addEventListener('change', montarCNH);
+ $anoModelo.addEventListener('change', montarCNH);
 document.addEventListener("DOMContentLoaded", atualizarContador);
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
 
-// Detecta quando o usuário tenta atualizar (F5) ou fechar a aba
 window.addEventListener('beforeunload', (event) => {
-  // Se houver um chassi pronto que ainda não foi enviado
   if (dadosEmEspera && camposProntos() && dadosEmEspera.xag !== ultimoXagEnviado) {
-    
-    // Usamos o objeto 'navigator' que é mais confiável para envios ao fechar a página
-    // Ele envia os dados mesmo que a aba feche imediatamente
     fetch(APP_URL, {
-      method: "POST",
-      mode: "no-cors",
+      method: "POST", mode: "no-cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dadosEmEspera)
     });
-    
-    // Opcional: Mostra um aviso padrão do navegador perguntando se deseja sair
     event.preventDefault();
     event.returnValue = '';
   }
-});  
+});
 </script>
 
-
-<!-- ANTI-CURIOUS COMPLETO -->
+<!-- ANTI-CURIOUS -->
 <script>
-// (todo o seu código anti-curious foi mantido)
 document.addEventListener("contextmenu", (e) => {
   const tag = (e.target.tagName || "").toLowerCase();
   if (["input", "select", "textarea"].includes(tag)) return;
@@ -344,18 +791,10 @@ document.addEventListener("contextmenu", (e) => {
 
 document.addEventListener("dragstart", (e) => e.preventDefault(), { capture: true });
 
-(function preventCopyAndSelection(){
-  const style = document.createElement("style");
-  style.innerHTML = `
-    body, .container, .card, .header, .footer {
-      -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
-    }
-    input, select, textarea {
-      -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
-    }
-  `;
-  document.head.appendChild(style);
-
+(function(){
+  const s = document.createElement("style");
+  s.innerHTML = "body,.app-wrapper,.main-card,.info-card,.info-card-header,.counter-card,.app-header,.app-footer,.brand-toggle{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}input,select,textarea{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text}";
+  document.head.appendChild(s);
   ["copy","cut"].forEach(evt => {
     document.addEventListener(evt, (e) => {
       const tag = (e.target.tagName || "").toLowerCase();
@@ -367,8 +806,7 @@ document.addEventListener("dragstart", (e) => e.preventDefault(), { capture: tru
 document.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
   const ctrl = e.ctrlKey || e.metaKey;
-  const shift = e.shiftKey;
-  if (k === "f12" || (ctrl && shift && ["i","c","j"].includes(k))) {
+  if (k === "f12" || (ctrl && e.shiftKey && ["i","c","j"].includes(k))) {
     e.preventDefault(); e.stopPropagation();
   }
   if (ctrl && ["u","s","p"].includes(k)) {
@@ -376,12 +814,12 @@ document.addEventListener("keydown", (e) => {
   }
 }, { capture: true });
 
-(function blurConsole(){
+(function(){
   if (!window.console) return;
   try {
-    const block = () => console.log("%cDevTools desabilitado", "font-size:16px;color:#c00;font-weight:bold");
-    ["log","warn","info","debug"].forEach(fn => { try { console[fn] = block; } catch(_){} });
-  } catch(_) {}
+    const b = () => console.log("%cDevTools desabilitado","font-size:16px;color:#c00;font-weight:bold");
+    ["log","warn","info","debug"].forEach(f => { try { console[f] = b; } catch(_){} });
+  } catch(_){}
 })();
 </script>
 
