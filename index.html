@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Conversor Chassi XAG → CNH</title>
+<title id="docTitle">Conversor Chassi XAG → CNH</title>
 <meta name="theme-color" content="#00539B" />
 <link rel="manifest" href="manifest.json" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -476,7 +476,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {
 <div class="app-wrapper">
 
   <header class="app-header">
-    <h1>Conversor de Chassi</h1>
+    <h1 id="titleHeader">Conversor de Chassi</h1>
     <p class="subtitle">XAG → CNH Industrial</p>
     <div class="brand-toggle brand-transition">
       <button class="brand-btn active" data-brand-btn="newholland" onclick="setBrand('newholland')" aria-label="New Holland" aria-pressed="true">New Holland</button>
@@ -486,23 +486,23 @@ button:focus-visible, select:focus-visible, input:focus-visible {
 
   <section class="main-card brand-transition">
     <div class="field-group">
-      <label class="field-label" for="xag">Chassi XAG</label>
+      <label class="field-label" for="xag" id="labelXag">Chassi XAG</label>
       <input class="field-input" id="xag" type="text" maxlength="20" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
     </div>
 
     <div class="field-group">
-      <label class="field-label" for="kit">Kit</label>
+      <label class="field-label" for="kit" id="labelKit">Kit</label>
       <select class="field-select" id="kit">
-        <option value="" selected disabled>Selecione o kit...</option>
+        <option value="" selected disabled id="optSelectKit">Selecione o kit...</option>
         <option value="Basic">Basic</option>
         <option value="Full">Full</option>
       </select>
     </div>
 
     <div class="field-group">
-      <label class="field-label" for="anoModelo">Ano-modelo (Atualmente todos são 2024)</label>
+      <label class="field-label" for="anoModelo" id="labelAnoModelo">Ano-modelo (Atualmente todos são 2024)</label>
       <select class="field-select" id="anoModelo">
-        <option value="" selected disabled>Selecione o ano...</option>
+        <option value="" selected disabled id="optSelectAno">Selecione o ano...</option>
         <option value="2024">2024</option>
         <option value="2025">2025</option>
         <option value="2026">2026</option>
@@ -514,7 +514,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {
     <div class="divider"></div>
 
     <div class="result-box" id="resultBox">
-      <div class="result-label">Chassi CNH</div>
+      <div class="result-label" id="labelResult">Chassi CNH</div>
       <div class="result-value" id="output"></div>
     </div>
 
@@ -525,17 +525,17 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   </section>
 
   <div class="counter-card brand-transition">
-    <div class="counter-label">Chassis convertidos</div>
+    <div class="counter-label" id="labelCounter">Chassis convertidos</div>
     <div class="counter-num" id="contador">—</div>
   </div>
 
   <div class="info-card">
     <div class="info-card-header" id="infoHeader1" onclick="toggleInfo('infoBody1','infoHeader1')" role="button" tabindex="0" aria-expanded="false">
-      Instalar no celular
+      <span id="titleInstallMobile">Instalar no celular</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
     </div>
     <div class="info-card-body" id="infoBody1">
-      <ol>
+      <ol id="listInstallMobile">
         <li>Abra este site no navegador do celular.</li>
         <li>Aguarde o aviso <b>"Adicionar à tela inicial"</b>.</li>
         <li>Se não aparecer, toque em <b>⋮</b> e depois <b>Adicionar à tela inicial</b>.</li>
@@ -546,11 +546,11 @@ button:focus-visible, select:focus-visible, input:focus-visible {
 
   <div class="info-card">
     <div class="info-card-header" id="infoHeader2" onclick="toggleInfo('infoBody2','infoHeader2')" role="button" tabindex="0" aria-expanded="false">
-      Instalar no computador
+      <span id="titleInstallPc">Instalar no computador</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
     </div>
     <div class="info-card-body" id="infoBody2">
-      <ol>
+      <ol id="listInstallPc">
         <li>Abra no Edge ou Chrome.</li>
         <li>Clique no ícone de instalação na barra de endereço.</li>
         <li>Confirme em <b>Instalar</b>.</li>
@@ -569,6 +569,99 @@ button:focus-visible, select:focus-visible, input:focus-visible {
 
 
 <script>
+// ==========================================
+// TRADUÇÕES E IDIOMA
+// ==========================================
+const translations = {
+  pt: {
+    docTitle: "Conversor Chassi XAG → CNH",
+    titleHeader: "Conversor de Chassi",
+    labelXag: "Chassi XAG",
+    labelKit: "Kit",
+    optSelectKit: "Selecione o kit...",
+    labelAnoModelo: "Ano-modelo (Atualmente todos são 2024)",
+    optSelectAno: "Selecione o ano...",
+    labelResult: "Chassi CNH",
+    btnCopy: "Copiar",
+    btnClear: "Limpar",
+    labelCounter: "Chassis convertidos",
+    titleInstallMobile: "Instalar no celular",
+    listInstallMobile: `
+      <li>Abra este site no navegador do celular.</li>
+      <li>Aguarde o aviso <b>"Adicionar à tela inicial"</b>.</li>
+      <li>Se não aparecer, toque em <b>⋮</b> e depois <b>Adicionar à tela inicial</b>.</li>
+      <li>Confirme — o app será instalado como ícone real.</li>
+    `,
+    titleInstallPc: "Instalar no computador",
+    listInstallPc: `
+      <li>Abra no Edge ou Chrome.</li>
+      <li>Clique no ícone de instalação na barra de endereço.</li>
+      <li>Confirme em <b>Instalar</b>.</li>
+      <li>O app funcionará como programa independente.</li>
+    `,
+    toastCopied: "Chassi CNH copiado!",
+    toastCopyError: "Erro ao copiar. Selecione e copie manualmente.",
+    toastCleared: "Campos limpos",
+    errorAnoInvalid: "Erro: Ano XAG inválido"
+  },
+  es: {
+    docTitle: "Convertidor Chasis XAG → CNH",
+    titleHeader: "Convertidor de chasis",
+    labelXag: "Chasis XAG",
+    labelKit: "Kit",
+    optSelectKit: "Seleccione el kit...",
+    labelAnoModelo: "Año modelo (Actualmente todos son 2024)",
+    optSelectAno: "Seleccione el año...",
+    labelResult: "Chasis CNH",
+    btnCopy: "Copiar",
+    btnClear: "Limpiar",
+    labelCounter: "Chasis convertidos",
+    titleInstallMobile: "Instalar en el celular",
+    listInstallMobile: `
+      <li>Abra este sitio en el navegador del celular.</li>
+      <li>Espere el aviso <b>"Agregar a la pantalla principal"</b>.</li>
+      <li>Si no aparece, toque en <b>⋮</b> y luego en <b>Agregar a la pantalla principal</b>.</li>
+      <li>Confirme — la aplicación se instalará como un icono real.</li>
+    `,
+    titleInstallPc: "Instalar en la computadora",
+    listInstallPc: `
+      <li>Abra en Edge o Chrome.</li>
+      <li>Haga clic en el icono de instalación en la barra de direcciones.</li>
+      <li>Confirme en <b>Instalar</b>.</li>
+      <li>La aplicación funcionará como un programa independiente.</li>
+    `,
+    toastCopied: "¡Chasis CNH copiado!",
+    toastCopyError: "Error al copiar. Seleccione y copie manualmente.",
+    toastCleared: "Campos limpios",
+    errorAnoInvalid: "Error: Año XAG inválido"
+  }
+};
+
+let currentLang = 'pt';
+
+function applyLanguage() {
+  const userLang = navigator.language || navigator.userLanguage || 'pt';
+  currentLang = userLang.toLowerCase().startsWith('es') ? 'es' : 'pt';
+  const t = translations[currentLang];
+
+  document.documentElement.lang = currentLang === 'es' ? 'es' : 'pt-BR';
+  document.getElementById('docTitle').textContent = t.docTitle;
+  document.getElementById('titleHeader').textContent = t.titleHeader;
+  document.getElementById('labelXag').textContent = t.labelXag;
+  document.getElementById('labelKit').textContent = t.labelKit;
+  document.getElementById('optSelectKit').textContent = t.optSelectKit;
+  document.getElementById('labelAnoModelo').textContent = t.labelAnoModelo;
+  document.getElementById('optSelectAno').textContent = t.optSelectAno;
+  document.getElementById('labelResult').textContent = t.labelResult;
+  document.getElementById('copyBtn').textContent = t.btnCopy;
+  document.getElementById('clearBtn').textContent = t.btnClear;
+  document.getElementById('labelCounter').textContent = t.labelCounter;
+  document.getElementById('titleInstallMobile').textContent = t.titleInstallMobile;
+  document.getElementById('listInstallMobile').innerHTML = t.listInstallMobile;
+  document.getElementById('titleInstallPc').textContent = t.titleInstallPc;
+  document.getElementById('listInstallPc').innerHTML = t.listInstallPc;
+}
+
 function setBrand(brand) {
   document.documentElement.setAttribute('data-brand', brand);
   document.querySelectorAll('.brand-btn').forEach(btn => {
@@ -610,9 +703,9 @@ function copiarFallback(texto) {
   ta.select();
   try {
     document.execCommand('copy');
-    showToast('Chassi CNH copiado!');
+    showToast(translations[currentLang].toastCopied);
   } catch (e) {
-    showToast('Erro ao copiar. Selecione e copie manualmente.');
+    showToast(translations[currentLang].toastCopyError);
   }
   document.body.removeChild(ta);
 }
@@ -664,7 +757,7 @@ function montarCNH() {
   const letraAno = VIN_YEAR_CODE[2020 + anoIndex];
 
   if (!letraAno) {
-    $output.textContent = "Erro: Ano XAG inválido";
+    $output.textContent = translations[currentLang].errorAnoInvalid;
     $resultBox.classList.add('visible');
     $btnRow.classList.add('hidden');
     return;
@@ -721,7 +814,7 @@ function atualizarContador() {
   if (!texto) return;
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(texto)
-      .then(() => showToast('Chassi CNH copiado!'))
+      .then(() => showToast(translations[currentLang].toastCopied))
       .catch(() => copiarFallback(texto));
   } else {
     copiarFallback(texto);
@@ -730,7 +823,7 @@ function atualizarContador() {
 
  $clearBtn.onclick = () => {
   if (dadosEmEspera && camposProntos()) enviarParaPlanilha(dadosEmEspera);
-  showToast('Campos limpos');
+  showToast(translations[currentLang].toastCleared);
   $xag.value = "";
   $marca.selectedIndex = 0;
   $kit.selectedIndex = 0;
@@ -773,7 +866,11 @@ function atualizarContador() {
 
  $kit.addEventListener('change', montarCNH);
  $anoModelo.addEventListener('change', montarCNH);
-document.addEventListener("DOMContentLoaded", atualizarContador);
+
+document.addEventListener("DOMContentLoaded", () => {
+  applyLanguage();
+  atualizarContador();
+});
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
